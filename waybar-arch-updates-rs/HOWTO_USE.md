@@ -12,7 +12,7 @@ This small program will give you fast updates with less network usage. After you
 
 How to use
 
-    install binary waybar-module-pacman-updates to your PATH
+    install binary waybar-arch-updates-rs to your PATH
     add to ~/.config/waybar/config
 
 "custom/updates": {
@@ -22,8 +22,8 @@ How to use
         "has-updates": "󱍷",
         "updated": "󰂪"
     },
-    "exec-if": "which waybar-module-pacman-updates",
-    "exec": "waybar-module-pacman-updates --interval-seconds 5 --network-interval-seconds 300"
+    "exec-if": "which waybar-arc-updates-rs",
+    "exec": "waybar-arch-updates-rs --interval-seconds 5 --network-interval-seconds 300"
 }
 
     add "custom/updates" to one of modules-left, modules-center or modules-right
@@ -50,8 +50,8 @@ waybar config
         "has-updates": "󱍷",
         "updated": ""
     },
-    "exec-if": "which waybar-module-pacman-updates",
-    "exec": "waybar-module-pacman-updates --no-zero-output"
+    "exec-if": "which waybar-arch-updates-rs",
+    "exec": "waybar-arc-updates-rs --no-zero-output"
 }
 
 style.css
