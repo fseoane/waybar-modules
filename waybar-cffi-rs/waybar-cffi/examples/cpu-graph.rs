@@ -30,7 +30,13 @@ impl Module for CpuGraph {
         CpuGraph
     }
     /// Called when the module should be updated.
-    fn update(&mut self) {}
+    fn update(&mut self) {
+        current_sys.refresh_all();
+        current_net.refresh();
+        if cmdn_config.temperature_item.len() >0 {
+            current_comp.refresh();
+        }
+    }
 
     /// Called when the module should be refreshed in response to a signal.
     fn refresh(&mut self, signal: i32) {}
