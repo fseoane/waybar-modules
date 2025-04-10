@@ -1,6 +1,6 @@
-use serde::{Serialize,Deserialize};
+use serde::Deserialize;
 use waybar_cffi::{
-    gtk::{atk::Text, prelude::ContainerExt, Label, TextView},
+    gtk::{prelude::ContainerExt, Label},
     waybar_module, InitInfo, Module,
 };
 
@@ -16,7 +16,6 @@ struct Config {
 }
 
 // CMNT stands for Cpu. Memory, Network, Temperature
-#[derive(Serialize,Deserialize)]
 struct CMNTGraph{
     cpu:Vec<f32>,
     mem:Vec<f32>,
@@ -45,7 +44,6 @@ impl Module for CMNTGraph {
             cpu: Vec::new(),
             mem: Vec::new(),
             net_up: Vec::new(),
-
             net_down: Vec::new(),
             temp: Vec::new(),
         };
@@ -87,6 +85,8 @@ impl Module for CMNTGraph {
 
         }
 
+        
+        
         //let text = get_cpu_chart(&cmnt_graph.cpu).as_str();
         let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
         //let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
