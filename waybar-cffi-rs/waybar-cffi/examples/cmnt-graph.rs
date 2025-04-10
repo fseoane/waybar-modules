@@ -90,34 +90,13 @@ impl Module for CMNTGraph {
 
         }
 
-        
-        
         let label = Label::new(Some(""));
         label.set_markup(get_cpu_chart(&cmnt_graph.cpu).as_str());
 
+        label.set_tooltip_markup(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
 
-        //let tooltip = Tooltip::set_markup(Some(&text));
-
-        //println!("{}", get_cpu_chart(&cmnt_graph.cpu).as_str());
-
-        // label.connect_tooltip_markup_notify(move |label_tip| {
-        //     label_tip.set_tooltip_text(
-        //         Some(
-        //             &format!("{}", &interface))
-        //         );
-        //     }
-        // );
-
-        // label.connect_tooltip_text_notify(move |label_tip2| {
-        //     label_tip2.set_tooltip_text(
-        //         Some(
-        //             &format!("{}", &interface))
-        //         );
-        //     }
-        // );
-
-        // https://docs.rs/gtk/0.18.2/gtk/struct.Widget.html#
         container.add(&label);
+
         cmnt_graph
 
     }
