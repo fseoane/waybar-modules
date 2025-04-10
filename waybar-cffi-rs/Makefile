@@ -14,6 +14,7 @@ ffi: waybar-cffi-sys/src/raw.rs waybar-cffi-sys/WAYBAR_VERSION
 cmnt-graph:
 	$(CARGO) build -p waybar-cffi --example cmnt-graph
 	$(WAYBAR) -c waybar-cffi/examples/cmnt-graph.json
+
 hello-world:
 	$(CARGO) build -p waybar-cffi --example hello-world
 	$(WAYBAR) -c waybar-cffi/examples/hello-world.json

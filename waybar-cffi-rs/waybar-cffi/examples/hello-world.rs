@@ -25,5 +25,5 @@ waybar_module!(HelloWorld);
 
 #[derive(Deserialize)]
 struct Config {
-    name: Option<String>,
+    name: Option<String>
 }
