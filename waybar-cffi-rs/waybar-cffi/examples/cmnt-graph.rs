@@ -51,6 +51,12 @@ impl Module for CMNTGraph {
         };
 
         for i in 1..history{
+            // Refresh the system metrics
+            current_sys.refresh_all();
+            current_net.refresh();
+            if temperature_item.len() >0 {
+                current_comp.refresh();
+            }
             // Call each function to get all the values we need
             let cpu_avg = get_cpu_use(&current_sys);
             let mem_prcnt = get_mem_use(&current_sys);
