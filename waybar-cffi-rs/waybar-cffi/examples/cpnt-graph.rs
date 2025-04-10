@@ -4,6 +4,9 @@ use waybar_cffi::{
     waybar_module, InitInfo, Module,
 };
 
+const CPU_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
+const CPU_CHARS:&str="bcdefghij";
+
 #[derive(Deserialize)]
 struct Config {
     history: Option<i32>,
@@ -77,10 +80,7 @@ impl Module for CMNTGraph {
 
         }
 
-        let label = Label::new(Some(&format!(
-            "Hello {}!",
-            config.name.as_deref().unwrap_or("World")
-        )));
+        let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu)));
 
         let tooltip = GtkTooltip::new(Some(&format!(
             "Hello {}!",
@@ -110,6 +110,23 @@ impl Module for CMNTGraph {
 }
 
 waybar_module!(CMNTGraph);
+
+
+// -------------------------------------------------------------------------
+// Get the CPU chart
+fn get_cpu_chart(cpu_stats: &Vec<f32>) -> &str {
+
+    let mut cpu_chart: String = String::from("");
+    let cpu_avg_percent:f32 =  (cpu_stats.iter().sum() / cpu_stats.len());
+
+    // Put all of the core loads into a vector
+    for cpu_stat in cpu_stats.iter(){
+        let cpu_stat_0_to_9 = ((*cpu_stat * (cpu_stats.len() as f32 - 1.0)) / 100.0) as i8;
+        cpu_char.push(format!("<span color='{}'>{}</span>"),CPU_COLOR[cpu_stat_0_to_9],CPU_CHARS[cpu_stat_0_to_9]);
+    }
+
+    cpu_chart.as_str()
+}
 
 // -------------------------------------------------------------------------
 // Get the average core usage
