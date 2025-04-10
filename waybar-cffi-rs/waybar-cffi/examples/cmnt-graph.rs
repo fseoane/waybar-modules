@@ -110,7 +110,11 @@ impl Module for CMNTGraph {
     fn do_action(&mut self, action: &str) {}
 }
 
+
+
+
 waybar_module!(CMNTGraph);
+
 
 // -------------------------------------------------------------------------
 
