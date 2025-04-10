@@ -1,6 +1,6 @@
 use serde::{Serialize,Deserialize};
 use waybar_cffi::{
-    gtk::{ffi::GtkTooltip, prelude::ContainerExt, traits::WidgetExt, Label},
+    gtk::{atk::Text, prelude::ContainerExt, Label, TextView},
     waybar_module, InitInfo, Module,
 };
 
@@ -87,24 +87,34 @@ impl Module for CMNTGraph {
 
         }
 
+        //let text = get_cpu_chart(&cmnt_graph.cpu).as_str();
         let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
+        //let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
         //let label = Label::new(Some(String::from("Hello!").as_str()));
+        //label.set_text(get_cpu_chart(&cmnt_graph.cpu).as_str());
 
-
-        //let tooltip = GtkTooltip::new(Some(&format!("{}",config.interface.as_deref().unwrap_or("total"))));
+       // let tooltip = Tooltip::set_markup(Some(&text));
 
         //println!("{}", get_cpu_chart(&cmnt_graph.cpu).as_str());
 
-        label.connect_tooltip_markup_notify(move |label_tip| {
-            label_tip.set_tooltip_markup(
-                Some(
-                    &format!("{}", &interface))
-                );
-            }
-        );
+        // label.connect_tooltip_markup_notify(move |label_tip| {
+        //     label_tip.set_tooltip_text(
+        //         Some(
+        //             &format!("{}", &interface))
+        //         );
+        //     }
+        // );
 
+        // label.connect_tooltip_text_notify(move |label_tip2| {
+        //     label_tip2.set_tooltip_text(
+        //         Some(
+        //             &format!("{}", &interface))
+        //         );
+        //     }
+        // );
+
+        // https://docs.rs/gtk/0.18.2/gtk/struct.Widget.html#
         container.add(&label);
-
         cmnt_graph
 
     }
@@ -131,7 +141,7 @@ waybar_module!(CMNTGraph);
 // Get the CPU chart
 fn get_cpu_chart(cpu_stats: &Vec<f32>) -> String {
 
-    let mut cpu_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
+    let mut cpu_chart: String = String::from("{\"text:\"<span font-family='efe-graph' rise='-4444'>");
     let _cpu_avg_percent: f32 = cpu_stats.iter().copied().sum::<f32>() / cpu_stats.len() as f32;
 
     // Put all of the core loads into a vector
@@ -139,8 +149,10 @@ fn get_cpu_chart(cpu_stats: &Vec<f32>) -> String {
         let cpu_stat_0_to_9: usize = ((*cpu_stat * (cpu_stats.len() as f32 - 1.0)) / 100.0) as usize;
         cpu_chart.push_str(format!("<span color='{}'>{}</span>",CPU_COLORS[cpu_stat_0_to_9],CPU_CHARS[cpu_stat_0_to_9]).as_str());
     }
+    //{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsage\",\"tooltip\":\"Avg.Usage:$averageUsage\",\"class\":\"\",\"percentage\":$cpuUsage}
 
     cpu_chart.push_str("</span>|");
+    cpu_chart.push_str("\",\"alt\":\"\",\"tooltip\":\"\",\"class\":\"\",\"percentage\":0}");
     cpu_chart
 }
 
