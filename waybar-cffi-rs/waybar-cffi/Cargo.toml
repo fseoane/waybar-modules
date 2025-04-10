@@ -14,10 +14,12 @@ serde = "1.0.218"
 serde_jsonc = "1.0.108"
 thiserror = "2.0.12"
 waybar-cffi-sys = { version = "0.1.0", path = "../waybar-cffi-sys" }
+sysinfo="0.30.7"
+
 
 [dev-dependencies]
 serde = { "version" = "1.0.218", features = ["derive"] }
 
 [[example]]
-name = "hello-world"
+name = "cmnt-graph"
 crate-type = ["cdylib"]

@@ -9,10 +9,10 @@ clean:
 
 ffi: waybar-cffi-sys/src/raw.rs waybar-cffi-sys/WAYBAR_VERSION
 
-.PHONY: hello-world
+.PHONY: cmnt-graph
 hello-world:
-	$(CARGO) build -p waybar-cffi --example hello-world
-	$(WAYBAR) -c waybar-cffi/examples/hello-world.json
+	$(CARGO) build -p waybar-cffi --example cmnt-graph
+	$(WAYBAR) -c waybar-cffi/examples/cmnt-graph.json
 
 waybar-cffi-sys/src/raw.rs: waybar-cffi-sys/src/wrapper.h
 	@if [ -z "$(WAYBAR_ROOT)" ]; then echo "Must provide the Waybar source tree root via the WAYBAR_ROOT environment variable."; exit 1; fi
