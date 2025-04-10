@@ -7,6 +7,7 @@
         "module_path": "target/debug/examples/libcmnt-graph.so",
         "history":10,
         "interface": "eth0",   // use "total" to get an average of all network interfaces
-        "interval" : 1
+        "interval" : 1,
+        "temperature_item": ""
     }
 }

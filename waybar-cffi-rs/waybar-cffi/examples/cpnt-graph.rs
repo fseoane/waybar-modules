@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use waybar_cffi::{
-    gtk::{prelude::ContainerExt, Label},
+    gtk::{ffi::GtkTooltip, prelude::ContainerExt, Label},
     waybar_module, InitInfo, Module,
 };
 
@@ -9,23 +9,12 @@ struct Config {
     history: Option<i32>,
     interval: Option<i32>,
     interface: Option<String>,
+    temperature_item: Option<String>,
 
 }
 
-// CMNT stands for Cpu. Memory, Netwokr, Temperature
-struct CMNTStats {
-    cpu: String,
-    mem: String,
-    net_down_KBps: String,
-    net_up_KBps: String,
-    temperature: String,
-}
-
-// CMNT stands for Cpu. Memory, Netwokr, Temperature
+// CMNT stands for Cpu. Memory, Network, Temperature
 struct CMNTGraph{
-    history: i32,
-    interfaceface: String,
-    interval: i32,
     cpu:Vec<f32>,
     mem:Vec<f32>,
     net_up:Vec<u64>,
@@ -38,54 +27,71 @@ impl Module for CMNTGraph {
 
     fn init(info: &InitInfo, config: Config) -> Self {
         let container = info.get_root_widget();
-        let iface = config.interface.as_dref().unwrap_or("ëth0");
+
+        let interface = config.interface.as_dref().unwrap_or("ëth0");
         let history = config.history.as_dref().unwrap_or(10);
         let interval = config.interval.as_dref().unwrap_or(5);
+        let temperature_item = config.temperature_item.as_dref().unwrap_or("");
 
         // Define a system that we will check
         let mut current_sys = sysinfo::System::new_all();
         let mut current_net = sysinfo::Networks::new_with_refreshed_list();
         let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
 
-        // Call each function to get all the values we need
-        let cpu_avg = get_cpu_use(&current_sys);
-        let mem_prcnt = get_mem_use(&current_sys);
-        let mut temperature = 0;
-        if cmdn_config.get_temperature
-        {
-            if cmdn_config.temperature_item.len() >0 {
-                temperature = get_temp_item(&current_comp,&cmdn_config.temperature_item);
+        let mut cmnt_graph = CMNTGraph{
+            cpu: Vec::new(),
+            mem: Vec::new(),
+            net_up: Vec::new(),
+            net_down: Vec::new(),
+            temp: Vec::new(),
+        };
+
+        for i in 1..history{
+            // Call each function to get all the values we need
+            let cpu_avg = get_cpu_use(&current_sys);
+            let mem_prcnt = get_mem_use(&current_sys);
+            let mut temperature = 0;
+            if temperature_item.len() >0 {
+                temperature = get_temp_item(&current_comp,&temperature_item);
             }
             else {
                 temperature = get_avg_temp(&current_comp);
             }
+
+            let ntwk_dwn ;
+            let ntwk_up ;
+            if interface == "total" {
+                ntwk_dwn = get_tot_ntwk_dwn(&current_net,&interval);
+                ntwk_up = get_tot_ntwk_up(&current_net,&interval);
+            }
+            else{
+                ntwk_dwn = get_iface_ntwk_dwn(&current_net,&interval,&interface);
+                ntwk_up = get_iface_ntwk_up(&current_net,&interval,&interface);
+            }
+
+            cmnt_graph.cpu.push(format! ("{:.1}",cpu_avg));
+            cmnt_graph.mem.push(format! ("{:.1}",mem_prcnt));
+            cmnt_graph.net_up.push(format! ("{:.1}",ntwk_up));
+            cmnt_graph.net_down.push(format! ("{:.1}",ntwk_down));
+            cmnt_graph.temp.push(format! ("{:.1}",format! ("{:.1}",temperature)));
+
         }
-
-        let ntwk_dwn ;
-        let ntwk_up ;
-        if cmdn_config.iface == "total" {
-            ntwk_dwn = get_tot_ntwk_dwn(&current_net,&cmdn_config.polling_secs);
-            ntwk_up = get_tot_ntwk_up(&current_net,&cmdn_config.polling_secs);
-        }
-        else{
-            ntwk_dwn = get_iface_ntwk_dwn(&current_net,&cmdn_config.polling_secs,&cmdn_config.iface);
-            ntwk_up = get_iface_ntwk_up(&current_net,&cmdn_config.polling_secs,&cmdn_config.iface);
-        }
-
-
-
 
         let label = Label::new(Some(&format!(
             "Hello {}!",
             config.name.as_deref().unwrap_or("World")
         )));
 
-
-
+        let tooltip = GtkTooltip::new(Some(&format!(
+            "Hello {}!",
+            config.name.as_deref().unwrap_or("World")
+        )));
 
         container.add(&label);
+        container.add(&tooltip);
 
-        CMNTGraph
+        cmnt_graph
+
     }
     /// Called when the module should be updated.
     fn update(&mut self) {
@@ -106,7 +112,6 @@ impl Module for CMNTGraph {
 waybar_module!(CMNTGraph);
 
 // -------------------------------------------------------------------------
-
 // Get the average core usage
 fn get_cpu_use(req_sys: &sysinfo::System) -> f32{
     // Put all of the core loads into a vector
@@ -129,8 +134,8 @@ fn get_mem_use(req_sys: &sysinfo::System) -> f32{
 
 // Get the network (down)  usage for an interface
 fn get_iface_ntwk_dwn(  req_net: &sysinfo::Networks,
-    polling_secs: &i32,
-    iface: &str) -> u64{
+                        polling_secs: &i32,
+                        iface: &str) -> u64{
 
     // Get the total bytes recieved by every network interface
     let mut rcv_tot: Vec<u64> = Vec::new();
@@ -150,8 +155,8 @@ fn get_iface_ntwk_dwn(  req_net: &sysinfo::Networks,
 // -------------------------------------------------------------------------
 // Get the network (up) usage for an interface
 fn get_iface_ntwk_up(   req_net: &sysinfo::Networks,
-    polling_secs: &i32,
-    iface: &str) -> u64{
+                        polling_secs: &i32,
+                        iface: &str) -> u64{
 
     // Get the total bytes sent by every network interface
     let mut snd_tot: Vec<u64> = Vec::new();
@@ -160,7 +165,6 @@ fn get_iface_ntwk_up(   req_net: &sysinfo::Networks,
             //println!("{:?} rx:{} in {} secs --> {} KBps", interface_name,ntwk.transmitted(),polling_secs,((ntwk.transmitted() as i32 /polling_secs) / 1000) as i32 );
             snd_tot.push(ntwk.transmitted() as u64);
         }
-
     }
 
     // Total them and convert the bytes to KB
@@ -172,6 +176,7 @@ fn get_iface_ntwk_up(   req_net: &sysinfo::Networks,
 // -------------------------------------------------------------------------
 // Get average temperature of all temperature sensors
 fn get_avg_temp(req_comp: &sysinfo::Components) -> i32{
+
     // For every component, if it's the CPU, put its temperature in variable to return
     let mut avg_temp: i32 = 0;
     let temp_components_count:i32 = req_comp.list().len() as i32;
