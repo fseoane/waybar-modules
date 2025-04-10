@@ -13,7 +13,6 @@ struct Config {
     interval: Option<i32>,
     interface: Option<String>,
     temperature_item: Option<String>,
-
 }
 
 // CMNT stands for Cpu. Memory, Network, Temperature
@@ -31,15 +30,15 @@ impl Module for CMNTGraph {
     fn init(info: &InitInfo, config: Config) -> Self {
         let container = info.get_root_widget();
 
-        let interface = config.interface.unwrap_or(String::from("ëth0"));
-        let history = config.history.unwrap_or(10);
-        let interval = config.interval.unwrap_or(5);
-        let temperature_item = config.temperature_item.unwrap_or(String::from(""));
+        // let interface = config.interface.unwrap_or(String::from("ëth0"));
+        // let history = config.history.unwrap_or(10);
+        // let interval = config.interval.unwrap_or(5);
+        // let temperature_item = config.temperature_item.unwrap_or(String::from(""));
 
-        // Define a system that we will check
-        let mut current_sys = sysinfo::System::new_all();
-        let mut current_net = sysinfo::Networks::new_with_refreshed_list();
-        let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
+        // // Define a system that we will check
+        // let mut current_sys = sysinfo::System::new_all();
+        // let mut current_net = sysinfo::Networks::new_with_refreshed_list();
+        // let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
 
         let mut cmnt_graph = CMNTGraph{
             cpu: Vec::new(),
@@ -49,47 +48,52 @@ impl Module for CMNTGraph {
             temp: Vec::new(),
         };
 
-        for i in 1..history{
-            // Call each function to get all the values we need
-            let cpu_avg = get_cpu_use(&current_sys);
-            let mem_prcnt = get_mem_use(&current_sys);
-            let mut temperature = 0.0;
-            if temperature_item.len() >0 {
-                temperature = get_temp_item(&current_comp,&temperature_item);
-            }
-            else {
-                temperature = get_avg_temp(&current_comp);
-            }
+        // for i in 1..history{
+        //     // Call each function to get all the values we need
+        //     let cpu_avg = get_cpu_use(&current_sys);
+        //     let mem_prcnt = get_mem_use(&current_sys);
+        //     let mut temperature = 0.0;
+        //     if temperature_item.len() >0 {
+        //         temperature = get_temp_item(&current_comp,&temperature_item);
+        //     }
+        //     else {
+        //         temperature = get_avg_temp(&current_comp);
+        //     }
 
-            let ntwk_dwn ;
-            let ntwk_up ;
-            if interface == "total" {
-                ntwk_dwn = get_tot_ntwk_dwn(&current_net,&interval);
-                ntwk_up = get_tot_ntwk_up(&current_net,&interval);
-            }
-            else{
-                ntwk_dwn = get_iface_ntwk_dwn(&current_net,&interval,&interface);
-                ntwk_up = get_iface_ntwk_up(&current_net,&interval,&interface);
-            }
+        //     let ntwk_dwn ;
+        //     let ntwk_up ;
+        //     if interface == "total" {
+        //         ntwk_dwn = get_tot_ntwk_dwn(&current_net,&interval);
+        //         ntwk_up = get_tot_ntwk_up(&current_net,&interval);
+        //     }
+        //     else{
+        //         ntwk_dwn = get_iface_ntwk_dwn(&current_net,&interval,&interface);
+        //         ntwk_up = get_iface_ntwk_up(&current_net,&interval,&interface);
+        //     }
 
-            cmnt_graph.cpu.push(cpu_avg);
-            cmnt_graph.mem.push(mem_prcnt);
-            cmnt_graph.net_up.push(ntwk_up);
-            cmnt_graph.net_down.push(ntwk_dwn);
-            cmnt_graph.temp.push(temperature);
+        //     cmnt_graph.cpu.push(cpu_avg);
+        //     cmnt_graph.mem.push(mem_prcnt);
+        //     cmnt_graph.net_up.push(ntwk_up);
+        //     cmnt_graph.net_down.push(ntwk_dwn);
+        //     cmnt_graph.temp.push(temperature);
 
-        }
+        // }
 
-        let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
+        //let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
+        let label = Label::new(Some(String::from("Hello !").as_str()));
+
+
         //let tooltip = GtkTooltip::new(Some(&format!("{}",config.interface.as_deref().unwrap_or("total"))));
 
-        label.connect_tooltip_markup_notify(move |label_tip| {
-            label_tip.set_tooltip_markup(
-                Some(
-                    &format!("{}", &interface))
-                );
-            }
-        );
+        //println!("{}", get_cpu_chart(&cmnt_graph.cpu).as_str());
+
+        // label.connect_tooltip_markup_notify(move |label_tip| {
+        //     label_tip.set_tooltip_markup(
+        //         Some(
+        //             &format!("{}", &interface))
+        //         );
+        //     }
+        // );
 
         container.add(&label);
 
@@ -113,7 +117,6 @@ impl Module for CMNTGraph {
 }
 
 waybar_module!(CMNTGraph);
-
 
 // -------------------------------------------------------------------------
 
