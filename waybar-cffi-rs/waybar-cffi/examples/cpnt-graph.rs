@@ -4,6 +4,15 @@ use waybar_cffi::{
     waybar_module, InitInfo, Module,
 };
 
+#[derive(Deserialize)]
+struct Config {
+    history: Option<i32>,
+    interval: Option<i32>,
+    interface: Option<String>,
+
+}
+
+// CMNT stands for Cpu. Memory, Netwokr, Temperature
 struct CMNTStats {
     cpu: String,
     mem: String,
@@ -12,24 +21,59 @@ struct CMNTStats {
     temperature: String,
 }
 
+// CMNT stands for Cpu. Memory, Netwokr, Temperature
 struct CMNTGraph{
     history: i32,
     interfaceface: String,
     interval: i32,
-    stat:Vec<CMNTStats>,
-};
+    cpu:Vec<f32>,
+    mem:Vec<f32>,
+    net_up:Vec<u64>,
+    net_down:Vec<u64>,
+    temp:Vec<u64>,
+}
 
 impl Module for CMNTGraph {
     type Config = Config;
 
     fn init(info: &InitInfo, config: Config) -> Self {
         let container = info.get_root_widget();
-        let iface= config.
+        let iface = config.interface.as_dref().unwrap_or("ëth0");
+        let history = config.history.as_dref().unwrap_or(10);
+        let interval = config.interval.as_dref().unwrap_or(5);
 
         // Define a system that we will check
         let mut current_sys = sysinfo::System::new_all();
         let mut current_net = sysinfo::Networks::new_with_refreshed_list();
         let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
+
+        // Call each function to get all the values we need
+        let cpu_avg = get_cpu_use(&current_sys);
+        let mem_prcnt = get_mem_use(&current_sys);
+        let mut temperature = 0;
+        if cmdn_config.get_temperature
+        {
+            if cmdn_config.temperature_item.len() >0 {
+                temperature = get_temp_item(&current_comp,&cmdn_config.temperature_item);
+            }
+            else {
+                temperature = get_avg_temp(&current_comp);
+            }
+        }
+
+        let ntwk_dwn ;
+        let ntwk_up ;
+        if cmdn_config.iface == "total" {
+            ntwk_dwn = get_tot_ntwk_dwn(&current_net,&cmdn_config.polling_secs);
+            ntwk_up = get_tot_ntwk_up(&current_net,&cmdn_config.polling_secs);
+        }
+        else{
+            ntwk_dwn = get_iface_ntwk_dwn(&current_net,&cmdn_config.polling_secs,&cmdn_config.iface);
+            ntwk_up = get_iface_ntwk_up(&current_net,&cmdn_config.polling_secs,&cmdn_config.iface);
+        }
+
+
+
 
         let label = Label::new(Some(&format!(
             "Hello {}!",
@@ -59,12 +103,9 @@ impl Module for CMNTGraph {
     fn do_action(&mut self, action: &str) {}
 }
 
-waybar_module!(CpuGraph);
+waybar_module!(CMNTGraph);
 
-#[derive(Deserialize)]
-struct Config {
-    name: Option<String>,
-}
+// -------------------------------------------------------------------------
 
 // Get the average core usage
 fn get_cpu_use(req_sys: &sysinfo::System) -> f32{
@@ -127,4 +168,37 @@ fn get_iface_ntwk_up(   req_net: &sysinfo::Networks,
     //let ntwk_processed: u64 = (((ntwk_tot * 8) / (*polling_secs as u64)) / 1024) as u64;
     let ntwk_processed: u64 = (((ntwk_tot) / (*polling_secs as u64)) / 1000) as u64;
     ntwk_processed
+}
+// -------------------------------------------------------------------------
+// Get average temperature of all temperature sensors
+fn get_avg_temp(req_comp: &sysinfo::Components) -> i32{
+    // For every component, if it's the CPU, put its temperature in variable to return
+    let mut avg_temp: i32 = 0;
+    let temp_components_count:i32 = req_comp.list().len() as i32;
+    if temp_components_count >0 {
+        for comp in req_comp.list() {
+            if comp.temperature()>0.0
+            {
+                avg_temp += comp.temperature() as i32;
+            }
+        }
+        (avg_temp/temp_components_count) as i32
+    }
+    else {
+        0
+    }
+}
+// -------------------------------------------------------------------------
+// Get the temperature of an specific temp item
+fn get_temp_item(req_comp: &sysinfo::Components, temp_item: &str) -> i32{
+    // For every component, if it's the CPU, put its temperature in variable to return
+    let mut wanted_temp: f32 = -1.;
+    for comp in req_comp.list() {
+        //println!("{:?}", comp.label());
+        if comp.label() == temp_item {
+            wanted_temp = comp.temperature();
+        }
+    }
+
+    wanted_temp as i32
 }
