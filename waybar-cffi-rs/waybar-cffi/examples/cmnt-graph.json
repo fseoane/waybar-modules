@@ -4,9 +4,9 @@
     "modules-center": [],
     "modules-right": [],
     "cffi/cmnt-graph": {
-        "module_path": "target/debug/examples/libcmnt-graph.so",
+        "module_path": "target/debug/examples/libcmnt_graph.so",
         "history":10,
-        "interface": "eth0",   // use "total" to get an average of all network interfaces
+        "interface": "eth0",
         "interval" : 1,
         "temperature_item": ""
     }

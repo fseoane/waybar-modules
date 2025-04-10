@@ -14,6 +14,8 @@
 //! library:
 //!
 //! ```
+#![doc = include_str!("../examples/cmnt-graph.rs")]
+
 #![doc = include_str!("../examples/hello-world.rs")]
 //! ```
 //!
