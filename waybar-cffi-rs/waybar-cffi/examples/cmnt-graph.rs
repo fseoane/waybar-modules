@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::{thread, time::Duration};
 use waybar_cffi::{
-    gtk::{glib::ObjectExt, prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label,Tooltip},
+    gtk::{glib::ObjectExt, prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label},
     waybar_module, InitInfo, Module,
 };
 
@@ -101,13 +101,7 @@ impl Module for CMNTGraph {
 
     }
     /// Called when the module should be updated.
-    fn update(&mut self) {
-        // current_sys.refresh_all();
-        // current_net.refresh();
-        // if cmdn_config.temperature_item.len() >0 {
-        //     current_comp.refresh();
-        // }
-    }
+    fn update(&mut self) {}
 
     /// Called when the module should be refreshed in response to a signal.
     fn refresh(&mut self, signal: i32) {}
