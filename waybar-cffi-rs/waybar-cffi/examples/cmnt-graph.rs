@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::{thread, time::Duration};
 use waybar_cffi::{
     gtk::{ffi::gtk_widget_create_pango_context, glib::ObjectExt, pango::{self, ffi::pango_render_part_get_type}, prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label},
     waybar_module, InitInfo, Module,
@@ -34,6 +35,8 @@ impl Module for CMNTGraph {
         let history = config.history.unwrap_or(10);
         let interval = config.interval.unwrap_or(5);
         let temperature_item = config.temperature_item.unwrap_or(String::from(""));
+        let sleep_duration: Duration = Duration::from_secs(interval as u64);
+
 
         // Define a system that we will check
         let mut current_sys = sysinfo::System::new_all();
@@ -82,6 +85,8 @@ impl Module for CMNTGraph {
             cmnt_graph.net_up.push(ntwk_up);
             cmnt_graph.net_down.push(ntwk_dwn);
             cmnt_graph.temp.push(temperature);
+            
+            thread::sleep(sleep_duration);
 
         }
 
