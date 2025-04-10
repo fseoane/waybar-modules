@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use waybar_cffi::{
-    gtk::{prelude::ContainerExt, Label},
+    gtk::{ffi::gtk_widget_create_pango_context, glib::ObjectExt, pango::{self, ffi::pango_render_part_get_type}, prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label},
     waybar_module, InitInfo, Module,
 };
 
@@ -87,8 +87,10 @@ impl Module for CMNTGraph {
 
         
         
-        //let text = get_cpu_chart(&cmnt_graph.cpu).as_str();
+        //let a = LabelExt::set_markup(&self, get_cpu_chart(&cmnt_graph.cpu).as_str()));
         let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
+        label.set_markup(get_cpu_chart(&cmnt_graph.cpu).as_str());
+
         //let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
         //let label = Label::new(Some(String::from("Hello!").as_str()));
         //label.set_text(get_cpu_chart(&cmnt_graph.cpu).as_str());
@@ -141,7 +143,7 @@ waybar_module!(CMNTGraph);
 // Get the CPU chart
 fn get_cpu_chart(cpu_stats: &Vec<f32>) -> String {
 
-    let mut cpu_chart: String = String::from("{\"text:\"<span font-family='efe-graph' rise='-4444'>");
+    let mut cpu_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
     let _cpu_avg_percent: f32 = cpu_stats.iter().copied().sum::<f32>() / cpu_stats.len() as f32;
 
     // Put all of the core loads into a vector
@@ -152,7 +154,6 @@ fn get_cpu_chart(cpu_stats: &Vec<f32>) -> String {
     //{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsage\",\"tooltip\":\"Avg.Usage:$averageUsage\",\"class\":\"\",\"percentage\":$cpuUsage}
 
     cpu_chart.push_str("</span>|");
-    cpu_chart.push_str("\",\"alt\":\"\",\"tooltip\":\"\",\"class\":\"\",\"percentage\":0}");
     cpu_chart
 }
 
