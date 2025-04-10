@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::{thread, time::Duration};
 use waybar_cffi::{
-    gtk::{ffi::gtk_widget_create_pango_context, glib::ObjectExt, pango::{self, ffi::pango_render_part_get_type}, prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label},
+    gtk::{glib::ObjectExt, prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label,Tooltip},
     waybar_module, InitInfo, Module,
 };
 
@@ -92,15 +92,11 @@ impl Module for CMNTGraph {
 
         
         
-        //let a = LabelExt::set_markup(&self, get_cpu_chart(&cmnt_graph.cpu).as_str()));
-        let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
+        let label = Label::new(Some(""));
         label.set_markup(get_cpu_chart(&cmnt_graph.cpu).as_str());
 
-        //let label = Label::new(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
-        //let label = Label::new(Some(String::from("Hello!").as_str()));
-        //label.set_text(get_cpu_chart(&cmnt_graph.cpu).as_str());
 
-       // let tooltip = Tooltip::set_markup(Some(&text));
+        //let tooltip = Tooltip::set_markup(Some(&text));
 
         //println!("{}", get_cpu_chart(&cmnt_graph.cpu).as_str());
 
