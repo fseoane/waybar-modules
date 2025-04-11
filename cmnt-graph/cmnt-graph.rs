@@ -125,7 +125,6 @@ impl Module for CMNTGraph {
         container.add(&label);
 
         cmnt_graph
-
     }
 
     // fn init(info: &InitInfo, config: Config) -> Self {
