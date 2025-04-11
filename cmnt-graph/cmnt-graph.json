@@ -4,10 +4,10 @@
     "modules-center": [],
     "modules-right": [],
     "cffi/cmnt-graph": {
-        "module_path": "target/debug/examples/libcmnt_graph.so",
+        "module_path": "target/debug/libcmnt_graph.so",
         "return-type": "json",
         "format": "{}",
-        "history":10,
+        "history":20,
         "interface": "eth0",
         "interval" : 1,
         "temperature_item": ""

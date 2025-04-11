@@ -18,6 +18,10 @@ struct Config {
 
 // CMNT stands for Cpu. Memory, Network, Temperature
 struct CMNTGraph{
+    history: Option<i32>,
+    interval: Option<i32>,
+    interface: Option<String>,
+    temperature_item: Option<String>,
     cpu:Vec<f32>,
     mem:Vec<f32>,
     net_up:Vec<u64>,
@@ -36,26 +40,32 @@ impl Module for CMNTGraph {
         let interval = config.interval.unwrap_or(5);
         let temperature_item = config.temperature_item.unwrap_or(String::from(""));
 
+        let sleep_duration: Duration = Duration::from_secs(interval as u64);
+
+
         // Define a system that we will check
         let mut current_sys = sysinfo::System::new_all();
         let mut current_net = sysinfo::Networks::new_with_refreshed_list();
         let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
 
         let mut cmnt_graph = CMNTGraph{
+            history: Some(history.clone()),
+            interval: Some(interval.clone()),
+            interface: Some(interface.clone()),
+            temperature_item: Some(temperature_item.clone()),
             cpu: Vec::new(),
             mem: Vec::new(),
             net_up: Vec::new(),
-
             net_down: Vec::new(),
             temp: Vec::new(),
         };
 
-        for i in 1..history{
+        //for i in 1..history{
             // Refresh the system metrics
             current_sys.refresh_all();
-            current_net.refresh();
+            current_net.refresh(true);
             if temperature_item.len() >0 {
-                current_comp.refresh();
+                current_comp.refresh(true);
             }
             // Call each function to get all the values we need
             let cpu_avg = get_cpu_use(&current_sys);
@@ -79,13 +89,33 @@ impl Module for CMNTGraph {
                 ntwk_up = get_iface_ntwk_up(&current_net,&interval,&interface);
             }
 
+            if cmnt_graph.cpu.len() == history as usize{
+                cmnt_graph.cpu.remove(0);
+            }
             cmnt_graph.cpu.push(cpu_avg);
+
+            if cmnt_graph.mem.len() == history as usize{
+                cmnt_graph.mem.remove(0);
+            }
             cmnt_graph.mem.push(mem_prcnt);
+
+            if cmnt_graph.net_up.len() == history as usize{
+                cmnt_graph.net_up.remove(0);
+            }
             cmnt_graph.net_up.push(ntwk_up);
+
+            if cmnt_graph.net_down.len() == history as usize{
+                cmnt_graph.net_down.remove(0);
+            }
             cmnt_graph.net_down.push(ntwk_dwn);
+
+            if cmnt_graph.temp.len() == history as usize{
+                cmnt_graph.temp.remove(0);
+            }
             cmnt_graph.temp.push(temperature);
 
-        }
+            thread::sleep(sleep_duration);
+        //}
 
         let label = Label::new(Some(""));
         label.set_markup(get_cpu_chart(&cmnt_graph.cpu).as_str());
@@ -93,23 +123,246 @@ impl Module for CMNTGraph {
         label.set_tooltip_markup(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
 
         container.add(&label);
+
         cmnt_graph
 
     }
+
+    // fn init(info: &InitInfo, config: Config) -> Self {
+    //     let container = info.get_root_widget();
+
+    //     let interface = config.interface.unwrap_or(String::from("ëth0"));
+    //     let history = config.history.unwrap_or(10);
+    //     let interval = config.interval.unwrap_or(5);
+    //     let temperature_item = config.temperature_item.unwrap_or(String::from(""));
+
+    //     let sleep_duration: Duration = Duration::from_secs(interval as u64);
+
+
+    //     // Define a system that we will check
+    //     let mut current_sys = sysinfo::System::new_all();
+    //     let mut current_net = sysinfo::Networks::new_with_refreshed_list();
+    //     let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
+
+    //     let mut cmnt_graph = CMNTGraph{
+    //         history: Some(history.clone()),
+    //         interval: Some(interval.clone()),
+    //         interface: Some(interface.clone()),
+    //         temperature_item: Some(temperature_item.clone()),
+    //         cpu: Vec::new(),
+    //         mem: Vec::new(),
+    //         net_up: Vec::new(),
+    //         net_down: Vec::new(),
+    //         temp: Vec::new(),
+    //     };
+
+    //     loop {
+    //         // Refresh the system metrics
+    //         current_sys.refresh_all();
+    //         current_net.refresh(true);
+    //         if temperature_item.len() >0 {
+    //             current_comp.refresh(true);
+    //         }
+    //         // Call each function to get all the values we need
+    //         let cpu_avg = get_cpu_use(&current_sys);
+    //         let mem_prcnt = get_mem_use(&current_sys);
+    //         let mut temperature = 0.0;
+    //         if temperature_item.len() >0 {
+    //             temperature = get_temp_item(&current_comp,&temperature_item);
+    //         }
+    //         else {
+    //             temperature = get_avg_temp(&current_comp);
+    //         }
+
+    //         let ntwk_dwn ;
+    //         let ntwk_up ;
+    //         if interface == "total" {
+    //             ntwk_dwn = get_tot_ntwk_dwn(&current_net,&interval);
+    //             ntwk_up = get_tot_ntwk_up(&current_net,&interval);
+    //         }
+    //         else{
+    //             ntwk_dwn = get_iface_ntwk_dwn(&current_net,&interval,&interface);
+    //             ntwk_up = get_iface_ntwk_up(&current_net,&interval,&interface);
+    //         }
+
+    //         if cmnt_graph.cpu.len() == history as usize{
+    //             cmnt_graph.cpu.remove(0);
+    //         }
+    //         cmnt_graph.cpu.push(cpu_avg);
+
+    //         if cmnt_graph.mem.len() == history as usize{
+    //             cmnt_graph.mem.remove(0);
+    //         }
+    //         cmnt_graph.mem.push(mem_prcnt);
+
+    //         if cmnt_graph.net_up.len() == history as usize{
+    //             cmnt_graph.net_up.remove(0);
+    //         }
+    //         cmnt_graph.net_up.push(ntwk_up);
+
+    //         if cmnt_graph.net_down.len() == history as usize{
+    //             cmnt_graph.net_down.remove(0);
+    //         }
+    //         cmnt_graph.net_down.push(ntwk_dwn);
+
+    //         if cmnt_graph.temp.len() == history as usize{
+    //             cmnt_graph.temp.remove(0);
+    //         }
+    //         cmnt_graph.temp.push(temperature);
+
+    //         thread::sleep(sleep_duration);
+    //     }
+
+    //     let label = Label::new(Some(""));
+    //     label.set_markup(get_cpu_chart(&cmnt_graph.cpu).as_str());
+
+    //     label.set_tooltip_markup(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
+
+    //     container.add(&label);
+    //     cmnt_graph
+
+    // }
     /// Called when the module should be updated.
     fn update(&mut self) {
-        // current_sys.refresh_all();
-        // current_net.refresh();
-        // if cmdn_config.temperature_item.len() >0 {
-        //     current_comp.refresh();
-        // }
+        let interface = self.interface.as_ref().cloned().unwrap_or(String::from("ëth0"));
+        let history = self.history.unwrap_or(10);
+        let interval = self.interval.unwrap_or(5);
+        let temperature_item = self.temperature_item.as_ref().cloned().unwrap_or(String::from(""));
+
+        // Define a system that we will check
+        let mut current_sys = sysinfo::System::new_all();
+        let mut current_net = sysinfo::Networks::new_with_refreshed_list();
+        let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
+
+        current_sys.refresh_all();
+        current_net.refresh(true);
+        if temperature_item.len() >0 {
+            current_comp.refresh(true);
+        }
+
+        if self.cpu.len() == history as usize {
+            let cpu_avg = get_cpu_use(&current_sys);
+            self.cpu.remove(0);
+            self.cpu.push(cpu_avg);
+        }
+
+        if self.mem.len() == history as usize {
+            let mem_prcnt = get_mem_use(&current_sys);
+            self.mem.remove(0);
+            self.mem.push(mem_prcnt);
+        }
+
+        if self.temp.len() == history as usize {
+            let temperature;
+            if temperature_item.len() >0 {
+                temperature = get_temp_item(&current_comp,&temperature_item);
+            }
+            else {
+                temperature = get_avg_temp(&current_comp);
+            }
+            self.temp.remove(0);
+            self.temp.push(temperature);
+        }
+
+        if self.net_up.len() == history as usize {
+            let ntwk_up ;
+            if interface == "total" {
+                ntwk_up = get_tot_ntwk_up(&current_net,&interval);
+            }
+            else{
+                ntwk_up = get_iface_ntwk_up(&current_net,&interval,&interface);
+            }
+            self.net_up.remove(0);
+            self.net_up.push(ntwk_up);
+        }
+
+        if self.net_down.len() == history as usize {
+            let ntwk_dwn ;
+            if interface == "total" {
+                ntwk_dwn = get_tot_ntwk_dwn(&current_net,&interval);
+            }
+            else{
+                ntwk_dwn = get_iface_ntwk_dwn(&current_net,&interval,&interface);
+            }
+            self.net_down.remove(0);
+            self.net_down.push(ntwk_dwn);
+        }
+
+
+
     }
 
     /// Called when the module should be refreshed in response to a signal.
-    fn refresh(&mut self, signal: i32) {}
+    fn refresh(&mut self, signal: i32) {
+
+        let interface = self.interface.as_ref().cloned().unwrap_or(String::from("ëth0"));
+        let history = self.history.unwrap_or(10);
+        let interval = self.interval.unwrap_or(5);
+        let temperature_item = self.temperature_item.as_ref().cloned().unwrap_or(String::from(""));
+
+        // Define a system that we will check
+        let mut current_sys = sysinfo::System::new_all();
+        let mut current_net = sysinfo::Networks::new_with_refreshed_list();
+        let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
+
+        current_sys.refresh_all();
+        current_net.refresh(true);
+        if temperature_item.len() >0 {
+            current_comp.refresh(true);
+        }
+
+        if self.cpu.len() == history as usize {
+            let cpu_avg = get_cpu_use(&current_sys);
+            self.cpu.remove(0);
+            self.cpu.push(cpu_avg);
+        }
+
+        if self.mem.len() == history as usize {
+            let mem_prcnt = get_mem_use(&current_sys);
+            self.mem.remove(0);
+            self.mem.push(mem_prcnt);
+        }
+
+        if self.temp.len() == history as usize {
+            let temperature;
+            if temperature_item.len() >0 {
+                temperature = get_temp_item(&current_comp,&temperature_item);
+            }
+            else {
+                temperature = get_avg_temp(&current_comp);
+            }
+            self.temp.remove(0);
+            self.temp.push(temperature);
+        }
+
+        if self.net_up.len() == history as usize {
+            let ntwk_up ;
+            if interface == "total" {
+                ntwk_up = get_tot_ntwk_up(&current_net,&interval);
+            }
+            else{
+                ntwk_up = get_iface_ntwk_up(&current_net,&interval,&interface);
+            }
+            self.net_up.remove(0);
+            self.net_up.push(ntwk_up);
+        }
+
+        if self.net_down.len() == history as usize {
+            let ntwk_dwn ;
+            if interface == "total" {
+                ntwk_dwn = get_tot_ntwk_dwn(&current_net,&interval);
+            }
+            else{
+                ntwk_dwn = get_iface_ntwk_dwn(&current_net,&interval,&interface);
+            }
+            self.net_down.remove(0);
+            self.net_down.push(ntwk_dwn);
+        }
+    }
 
     /// Called when an action is called on the module.
     fn do_action(&mut self, action: &str) {}
+
 }
 
 waybar_module!(CMNTGraph);
@@ -130,7 +383,7 @@ fn get_cpu_chart(cpu_stats: &Vec<f32>) -> String {
     }
     //{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsage\",\"tooltip\":\"Avg.Usage:$averageUsage\",\"class\":\"\",\"percentage\":$cpuUsage}
 
-    cpu_chart.push_str("</span>|");
+    cpu_chart.push_str("</span>");
     cpu_chart
 }
 
@@ -246,14 +499,18 @@ fn get_avg_temp(req_comp: &sysinfo::Components) -> f32{
     // For every component, if it's the CPU, put its temperature in variable to return
     let mut avg_temp: f32 = 0.0;
     let temp_components_count:i32 = req_comp.list().len() as i32;
-    if temp_components_count >0 {
+    let mut count_real_components = 0;
+    if temp_components_count > 0 {
         for comp in req_comp.list() {
-            if comp.temperature()>0.0
-            {
-                avg_temp += comp.temperature();
+            match comp.temperature() {
+                Some(t) => {
+                    count_real_components += 1;
+                    avg_temp += t
+                }
+                None => (),
             }
         }
-        avg_temp/temp_components_count as f32
+        avg_temp/count_real_components as f32
     }
     else {
         0.0
@@ -270,7 +527,10 @@ fn get_temp_item(req_comp: &sysinfo::Components, temp_item: &str) -> f32{
     for comp in req_comp.list() {
         //println!("{:?}", comp.label());
         if comp.label() == temp_item {
-            wanted_temp = comp.temperature();
+           match comp.temperature() {
+                Some(t) =>  wanted_temp = t,
+                None => (),
+            }
         }
     }
 
