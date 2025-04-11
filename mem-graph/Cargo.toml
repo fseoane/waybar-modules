@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "cmnt_graph"
-path = "./cmnt-graph/cmnt-graph.rs"
+name = "mem_graph"
+path = "./lib/mem-graph.rs"
 crate-type = ["cdylib"]
 
 #[dev-dependencies]

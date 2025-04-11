@@ -1,0 +1,16 @@
+{
+    "position": "top",
+    "modules-left": ["cffi/cpu-graph","cffi/mem-graph"],
+    "modules-center": [],
+    "modules-right": [],
+    "cffi/mem-graph": {
+        "module_path": "target/debug/libmem_graph.so",
+        "history":20,
+        "interval" : 1
+    },
+    "cffi/cpu-graph": {
+        "module_path": "../cpu-graph/target/debug/libmem_graph.so",
+        "history":20,
+        "interval" : 1
+    }
+}

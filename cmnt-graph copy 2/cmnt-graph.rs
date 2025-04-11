@@ -48,6 +48,13 @@ impl Module for CMNTGraph {
         let mut current_net = sysinfo::Networks::new_with_refreshed_list();
         let mut current_comp: sysinfo::Components=sysinfo::Components::new_with_refreshed_list();
 
+        let label_cpu = Label::new(Some(""));
+        let label_mem = Label::new(Some(""));
+        let label_temp = Label::new(Some(""));
+        let _label_net = Label::new(Some(""));
+        let label_separator = Label::new(Some("|"));
+
+
         let mut cmnt_graph = CMNTGraph{
             history: Some(history.clone()),
             interval: Some(interval.clone()),
@@ -117,14 +124,26 @@ impl Module for CMNTGraph {
             thread::sleep(sleep_duration);
         //}
 
-        let label = Label::new(Some(""));
-        label.set_markup(get_cpu_chart(&cmnt_graph.cpu).as_str());
+        let cpu_chart = get_cpu_chart(&cmnt_graph.cpu) ;
+        let mem_chart = get_cpu_chart(&cmnt_graph.mem) ;
+        let temp_chart = get_cpu_chart(&cmnt_graph.temp) ;
 
-        label.set_tooltip_markup(Some(get_cpu_chart(&cmnt_graph.cpu).as_str()));
+        label_cpu.set_markup(&cpu_chart.as_str());
+        label_mem.set_markup(&mem_chart.as_str());
+        label_temp.set_markup(&temp_chart.as_str());
 
-        container.add(&label);
+        // label_cpu.set_tooltip_markup(Some(&cpu_chart.as_str()));
+        // label_mem.set_tooltip_markup(Some(&mem_chart.as_str()));
+        // label_temp.set_tooltip_markup(Some(&temp_chart.as_str()));
+
+        container.add(&label_cpu);
+        container.add(&label_separator);
+        container.add(&label_mem);
+        container.add(&label_separator);
+        container.add(&label_temp);
 
         cmnt_graph
+
     }
 
     // fn init(info: &InitInfo, config: Config) -> Self {
@@ -369,7 +388,6 @@ waybar_module!(CMNTGraph);
 // -------------------------------------------------------------------------
 
 // Get the CPU chart
-// Get the CPU chart
 fn get_cpu_chart(cpu_stats: &Vec<f32>) -> String {
 
     let mut cpu_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
@@ -386,6 +404,42 @@ fn get_cpu_chart(cpu_stats: &Vec<f32>) -> String {
     cpu_chart
 }
 
+// -------------------------------------------------------------------------
+
+fn get_mem_chart(mem_stats: &Vec<f32>) -> String {
+
+    let mut mem_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
+    let _mem_avg_percent: f32 = mem_stats.iter().copied().sum::<f32>() / mem_stats.len() as f32;
+
+    // Put all of the core loads into a vector
+    for mem_stat in mem_stats.iter(){
+        let mem_stat_0_to_9: usize = ((*mem_stat * (mem_stats.len() as f32 - 1.0)) / 100.0) as usize;
+        mem_chart.push_str(format!("<span color='{}'>{}</span>",CPU_COLORS[mem_stat_0_to_9],CPU_CHARS[mem_stat_0_to_9]).as_str());
+    }
+    //{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsage\",\"tooltip\":\"Avg.Usage:$averageUsage\",\"class\":\"\",\"percentage\":$cpuUsage}
+
+    mem_chart.push_str("</span>");
+    mem_chart
+}
+
+
+// -------------------------------------------------------------------------
+
+fn get_temp_chart(temp_stats: &Vec<f32>) -> String {
+
+    let mut temp_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
+    let _temp_avg_percent: f32 = temp_stats.iter().copied().sum::<f32>() / temp_stats.len() as f32;
+
+    // Put all of the core loads into a vector
+    for temp_stat in temp_stats.iter(){
+        let temp_stat_0_to_9: usize = ((*temp_stat * (temp_stats.len() as f32 - 1.0)) / 100.0) as usize;
+        temp_chart.push_str(format!("<span color='{}'>{}</span>",CPU_COLORS[temp_stat_0_to_9],CPU_CHARS[temp_stat_0_to_9]).as_str());
+    }
+    //{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsage\",\"tooltip\":\"Avg.Usage:$averageUsage\",\"class\":\"\",\"percentage\":$cpuUsage}
+
+    temp_chart.push_str("</span>");
+    temp_chart
+}
 // -------------------------------------------------------------------------
 
 // Get the average core usage

@@ -9,11 +9,11 @@ clean:
 
 ffi: waybar-cffi-sys/src/raw.rs waybar-cffi-sys/WAYBAR_VERSION
 
-.PHONY: cmnt-graph
+.PHONY: cpu-graph
 
-cmnt-graph:
-	$(CARGO) build -p waybar-modules cmnt-graph
-	$(WAYBAR) -c ./cmnt-graph/cmnt-graph.json
+cpu-graph:
+	$(CARGO) build -p waybar-modules cpu-graph
+	$(WAYBAR) -c ./cpu-graph/lib/cpu-graph.json
 
 
 waybar-cffi-sys/src/raw.rs: waybar-cffi-sys/src/wrapper.h
