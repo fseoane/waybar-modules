@@ -5,8 +5,6 @@
     "modules-right": [],
     "cffi/cmnt-graph": {
         "module_path": "target/debug/libcmnt_graph.so",
-        "return-type": "json",
-        "format": "{}",
         "history":20,
         "interface": "eth0",
         "interval" : 1,
