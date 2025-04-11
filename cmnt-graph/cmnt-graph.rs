@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::{thread, time::Duration};
 use waybar_cffi::{
-    gtk::{glib::ObjectExt, prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label},
+    gtk::{ prelude::ContainerExt, traits::{LabelExt, WidgetExt}, Label},
     waybar_module, InitInfo, Module,
 };
 
