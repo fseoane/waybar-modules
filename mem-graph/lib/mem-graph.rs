@@ -63,7 +63,7 @@ impl Module for MEMGraph {
         label_mem.set_tooltip_markup(Some(&mem_chart.as_str()));
 
         container.add(&label_mem);
-
+        println!("mem_graph init finished");
         mem_graph
 
     }

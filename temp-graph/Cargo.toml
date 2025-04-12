@@ -1,0 +1,21 @@
+[package]
+name = "waybar-modules"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "temp_graph"
+path = "./lib/temp-graph.rs"
+crate-type = ["cdylib"]
+
+#[dev-dependencies]
+#serde = { "version" = "1.0.218", features = ["derive"] }
+
+[dependencies]
+waybar-cffi = "0.1.0"
+#waybar-cffi-sys = { version = "0.1.0", path = "./waybar-cffi-sys" }
+itertools = "0.14.0"
+#serde = "1.0.218"
+serde = { "version" = "1.0.218", features = ["derive"] }
+thiserror = "2.0.12"
+sysinfo="0.34.2"

@@ -1,130 +1,124 @@
+use core::f64;
 use std::env;
-use std::io::Error;
-use std::process::Command;
-use std::sync::Mutex;
 use std::{thread, time::Duration};
+use sysinfo::System;
+use sysinfo::RefreshKind;
+use sysinfo::CpuRefreshKind;
 
-lazy_static::lazy_static! {
-    static ref DATABASE_SYNC_MUTEX: Mutex<()> = Mutex::new(());
-}
+const CPU_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
+const CPU_CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
     println!();
     println!("Options:");
-    println!("  --interval-seconds <seconds>   Set the interval between updates (default: 5)");
-    println!("  --network-interval-seconds <seconds>  Set the interval between network updates (default: 300)");
-    println!("  --no-zero-output               Don't print '0' when there are no updates available");
-    println!("  --tooltip-align-columns <font> Format tooltip as a table using given font (default: monospace)");
+    println!("  --interval <seconds>   Set the interval between updates (default: 1)");
+    println!("  --history <number>     Set the number of reading to show in the graph (default: 15)");
     println!();
 }
 
-fn main() -> Result<(), Error> {
-    thread::spawn(move || {
-        sync_database();
-    });
-    let mut iter: u32 = 0;
+// -------------------------------------------------------------------------
+
+
+// Get the  chart
+fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> String {
+
+    let mut return_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
+    let _chart_avg_percent: f32 = stats_set.iter().copied().sum::<f32>() / stats_set.len() as f32;
+
+    // Put all of the core loads into a vector
+    for one_stat in stats_set.iter(){
+        let stat_0_to_9: usize = ((one_stat * (stats_set.len() as f32 - 1.0)) / 100.0) as usize;
+        return_chart.push_str(format!("<span color='{}'>{}</span>",&colors[stat_0_to_9],&symbols[stat_0_to_9]).as_str());
+    }
+    //{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsage\",\"tooltip\":\"Avg.Usage:$averageUsage\",\"class\":\"\",\"percentage\":$cpuUsage}
+
+    return_chart.push_str("</span>");
+    return_chart
+}
+
+// -------------------------------------------------------------------------
+
+// Get the average core usage
+fn get_cpu_use(req_sys: &mut sysinfo::System) -> f32{
+
+    //std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+    req_sys.refresh_cpu_usage();
+    // Put all of the core loads into a vector
+    let mut cpus: Vec<f64> = Vec::new();
+
+    for core in req_sys.cpus() {
+        cpus.push(core.cpu_usage() as f64);
+    }
+
+    // Get the average load
+    let cpu_tot: f64 = cpus.iter().sum();
+    let cpu_avg: f64 = cpu_tot / cpus.len() as f64;
+
+    //let load_avg = ((sysinfo::System::load_average().one + sysinfo::System::load_average().five + sysinfo::System::load_average().fifteen) / 3.0);
+    //let cpu_avg = req_sys.global_cpu_usage();
+    //std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+
+    println!("{}",cpu_avg);
+    //println!("{}",load_avg);
+    return cpu_avg as f32;
+}
+
+// -------------------------------------------------------------------------
+
+
+fn main() {
+    let mut history = 15;
+    let mut interval: u32 = 1;
     let args: Vec<String> = env::args().collect();
-    let mut interval_seconds: u32 = 5;
-    let mut network_interval_seconds: u32 = 300;
-    let mut clean_output = false;
-    let mut tooltip_align = false;
-    let mut tooltip_font = "monospace";
+    let mut stats: Vec<f32> = Vec::new();
+
+
+    // gather parameters from command line
     if args.len() > 1 {
         for (i, arg) in args.iter().enumerate() {
             if arg == "--help" {
                 display_help();
-                return Ok(());
-            } else if arg == "--interval-seconds" && i + 1 < args.len() {
-                interval_seconds = args[i + 1].parse().unwrap_or_else(|_| {
-                    panic!("--interval-seconds must be greater than 0!")
+            } else if arg == "--interval" && i + 1 < args.len() {
+                interval = args[i + 1].parse().unwrap_or_else(|_| {
+                    panic!("--interval must be greater than 0!")
                 });
-            } else if arg == "--network-interval-seconds" && i + 1 < args.len() {
-                network_interval_seconds = args[i + 1].parse().unwrap_or_else(|_| {
-                    panic!("--network-interval-seconds must be greater than 0!")
+            } else if arg == "--history" && i + 1 < args.len() {
+                history = args[i + 1].parse().unwrap_or_else(|_| {
+                    panic!("--history must be greater than 0!")
                 });
-            } else if arg == "--no-zero-output" {
-                clean_output = true;
-            } else if arg == "--tooltip-align-columns" {
-                tooltip_align = true;
-                if i + 1 < args.len() && args[i + 1][..1] != *"-" {
-                    tooltip_font = args[i + 1].as_str();
-                }
             }
         }
     }
-    let sleep_duration: Duration = Duration::from_secs(interval_seconds as u64);
-    if (interval_seconds == 0) || (network_interval_seconds == 0) {
-        panic!("interval-seconds and network-interval-seconds must be greater than 0");
+    if (interval == 0) || (history == 0)  {
+        panic!("--interval and --history must be greater than 0");
     }
-    let update_on_iter = network_interval_seconds / interval_seconds;
+
+    let sleep_duration: Duration = Duration::from_secs(interval as u64);
+    let mut current_sys = sysinfo::System::new_all();
+    // let mut current_sys = System::new_with_specifics(
+    //     RefreshKind::nothing().with_cpu(CpuRefreshKind::everything()),
+    // );
+    current_sys.refresh_cpu_specifics(CpuRefreshKind::everything());
+    //current_sys.refresh_all();
+
+    let _current_stats_length =  stats.len();
+
     loop {
-        if iter >= update_on_iter {
-            sync_database();
-            iter = 0;
-        }
-        let (updates, mut stdout) = get_updates();
-        if updates > 0 {
-            if tooltip_align {
-                let mut padding = [0; 4];
-                stdout
-                    .split_whitespace()
-                    .enumerate()
-                    .for_each(|(index, word)| {
-                        padding[index % 4] = padding[index % 4].max(word.len())
-                    });
 
-                stdout = format!(
-                    "<span font-family='{}'>{}</span>",
-                    tooltip_font,
-                    stdout
-                        .split_whitespace()
-                        .enumerate()
-                        .map(|(index, word)| {
-                            word.to_string() + " ".repeat(padding[index % 4] - word.len()).as_str()
-                        })
-                        .collect::<Vec<String>>()
-                        .chunks(4)
-                        .map(|line| line.join(" "))
-                        .collect::<Vec<String>>()
-                        .join("\n")
-                );
-            }
-            let tooltip = stdout.trim_end().replace("\"", "\\\"").replace("\n", "\\n");
-            println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"has-updates\",\"alt\":\"has-updates\"}}", updates, tooltip);
-        } else {
-            println!("{{\"text\":{},\"tooltip\":\"System updated\",\"class\": \"updated\",\"alt\":\"updated\"}}", if clean_output {"\"\""} else {"\"0\""});
+
+        // Call each function to get all the values we need
+        let cpu_avg = get_cpu_use(&mut current_sys);
+
+        if stats.len() == history as usize{
+            stats.remove(0);
         }
-        iter += 1;
+        stats.push(cpu_avg);
         thread::sleep(sleep_duration);
-    }
-}
 
-// check updates from network
-fn sync_database() {
-    let _lock = DATABASE_SYNC_MUTEX.lock().unwrap();
-    // checkupdates --nocolor
-    Command::new("checkupdates")
-        .args(["--nocolor"])
-        .output()
-        .expect("failed to execute process");
-}
+        let cpu_chart = get_single_chart(&stats,CPU_CHARS,CPU_COLORS) ;
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"{}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&cpu_chart,stats[stats.len()-1] as i32);
 
-// get updates info without network operations
-fn get_updates() -> (u16, String) {
-    // checkupdates --nosync --nocolor
-    let output = Command::new("checkupdates")
-        .args(["--nosync", "--nocolor"])
-        .output()
-        .expect("failed to execute process");
-    match output.status.code() {
-        Some(_code) => {
-            let stdout = String::from_utf8_lossy(&output.stdout).to_string();
-            if stdout.is_empty() {
-                return (0, "0".to_string());
-            }
-            ((stdout.split(" -> ").count() as u16) - 1, stdout)
-        }
-        None => (0, "0".to_string()),
     }
+
 }

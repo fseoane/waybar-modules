@@ -16,6 +16,7 @@ struct Config {
 
 // CMNT stands for Cpu. Memory, Network, Temperature
 struct CPUGraph{
+    label:Label,
     history: Option<i32>,
     interval: Option<i32>,
     stats:Vec<f32>,
@@ -32,15 +33,14 @@ impl Module for CPUGraph {
 
         let sleep_duration: Duration = Duration::from_secs(interval as u64);
 
-
         // Define a system that we will check
         let mut current_sys = sysinfo::System::new_all();
 
 
         let label_cpu = Label::new(Some(""));
 
-
         let mut cpu_graph = CPUGraph{
+            label: label_cpu,
             history: Some(history.clone()),
             interval: Some(interval.clone()),
             stats: Vec::new(),
@@ -64,16 +64,21 @@ impl Module for CPUGraph {
 
         let cpu_chart = get_single_chart(&cpu_graph.stats,CPU_CHARS,CPU_COLORS) ;
 
-        label_cpu.set_markup(&cpu_chart.as_str());
-        label_cpu.set_tooltip_markup(Some(&cpu_chart.as_str()));
+        cpu_graph.label.set_markup(&cpu_chart.as_str());
+        cpu_graph.label.set_tooltip_markup(Some(&cpu_chart.as_str()));
 
-        container.add(&label_cpu);
+        container.add(&cpu_graph.label);
 
+        println!("cpu_graph init finished");
+        loop {
+            cpu_graph.update();
+        }
         cpu_graph
 
     }
 
     fn update(&mut self) {
+        println!("cpu_graph update start");
 
         let history = self.history.unwrap_or(10);
         let interval = self.interval.unwrap_or(5);
@@ -81,7 +86,6 @@ impl Module for CPUGraph {
 
         // Define a system that we will check
         let mut current_sys = sysinfo::System::new_all();
-
 
         current_sys.refresh_all();
 
@@ -91,12 +95,23 @@ impl Module for CPUGraph {
             self.stats.push(new_stat);
         }
 
+        let cpu_chart = get_single_chart(&self.stats,CPU_CHARS,CPU_COLORS) ;
+
+        self.label = Label::new(Some(""));
+        self.label.set_markup(&cpu_chart.as_str());
+        self.label.set_tooltip_markup(Some(&cpu_chart.as_str()));
+
+        //self.container..add(&label_cpu);
+
         thread::sleep(sleep_duration);
+
+        println!("cpu_graph update finish");
 
     }
 
     /// Called when the module should be refreshed in response to a signal.
     fn refresh(&mut self, signal: i32) {
+        println!("cpu_graph refresh start");
 
         let history = self.history.unwrap_or(10);
         let interval = self.interval.unwrap_or(5);
@@ -114,7 +129,17 @@ impl Module for CPUGraph {
             self.stats.push(new_stat);
         }
 
+        let cpu_chart = get_single_chart(&self.stats,CPU_CHARS,CPU_COLORS) ;
+
+        let label_cpu = Label::new(Some(""));
+        label_cpu.set_markup(&cpu_chart.as_str());
+        label_cpu.set_tooltip_markup(Some(&cpu_chart.as_str()));
+
+        //self.container.add(&label_cpu);
+
         thread::sleep(sleep_duration);
+        println!("cpu_graph refresh finish");
+
     }
 
     /// Called when an action is called on the module.

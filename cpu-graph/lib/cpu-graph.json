@@ -1,6 +1,6 @@
 {
     "position": "top",
-    "modules-left": ["cffi/cpu-graph","cffi/mem-graph"],
+    "modules-left": ["cffi/cpu-graph","custom/separator50","cffi/mem-graph","custom/separator50","cffi/temp-graph"],
     "modules-center": [],
     "modules-right": [],
     "cffi/cpu-graph": {
@@ -12,5 +12,16 @@
         "module_path": "../mem-graph/target/debug/libmem_graph.so",
         "history":20,
         "interval" : 1
-    }
+    },
+    "cffi/temp-graph": {
+        "module_path": "../temp-graph/target/debug/libtemp_graph.so",
+        "history":20,
+        "interval" : 1,
+        "temperature_item": ""
+    },
+    "custom/separator50": {
+        "format":" | ",
+        "tooltip": false
+      }
+
 }
