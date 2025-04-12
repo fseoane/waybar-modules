@@ -4,7 +4,7 @@ use std::{thread, time::Duration};
 use sysinfo::CpuRefreshKind;
 
 const CPU_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CPU_CHARS: &[&str]= &["a","b","c","d","e","f","g","h","i","j"];
+const CPU_CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -77,7 +77,7 @@ fn main() {
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();
     current_sys.refresh_cpu_specifics(CpuRefreshKind::everything());
-    
+
     let _current_stats_length =  stats.len();
 
     loop {

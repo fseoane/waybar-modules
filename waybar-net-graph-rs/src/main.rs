@@ -54,6 +54,87 @@ fn get_cpu_use(req_sys: &mut sysinfo::System) -> f32{
 fn get_mem_use(req_sys: &sysinfo::System) -> f32{
     (req_sys.used_memory() as f32) / (req_sys.total_memory() as f32) * 100.
 }
+// -------------------------------------------------------------------------
+
+// Get the total network (down) usage
+fn get_tot_ntwk_dwn(req_net: &sysinfo::Networks,
+    polling_secs: &i32) -> u64{
+    // Get the total bytes recieved by every network interface
+    let mut rcv_tot: Vec<u64> = Vec::new();
+    for (_interface_name, ntwk) in req_net.list() {
+        rcv_tot.push(ntwk.received() as u64);
+    }
+
+    // Total them and convert the bytes to KB
+    let ntwk_tot: u64 = rcv_tot.iter().sum();
+    //let ntwk_processed = (((ntwk_tot*8)/(*polling_secs as u64)) / 1024) as u64;
+    let ntwk_processed = (((ntwk_tot)/(*polling_secs as u64)) / 1000) as u64;
+    ntwk_processed
+}
+
+// -------------------------------------------------------------------------
+
+// Get the total network (up) usage
+fn get_tot_ntwk_up( req_net: &sysinfo::Networks,
+    polling_secs: &i32) -> u64{
+    // Get the total bytes sent by every network interface
+    let mut snd_tot: Vec<u64> = Vec::new();
+    for (_interface_name, ntwk) in req_net.list() {
+        snd_tot.push(ntwk.transmitted() as u64);
+    }
+
+    // Total them and convert the bytes to KB
+    let ntwk_tot: u64 = snd_tot.iter().sum();
+    //let ntwk_processed = (((ntwk_tot*8)/(*polling_secs as u64)) / 1024) as u64;
+    let ntwk_processed = (((ntwk_tot)/(*polling_secs as u64)) / 1000) as u64;
+    ntwk_processed
+}
+
+// -------------------------------------------------------------------------
+
+// Get the network (down)  usage for an interface
+fn get_iface_ntwk_dwn(  req_net: &sysinfo::Networks,
+                        polling_secs: &i32,
+                        iface: &str) -> u64{
+
+    // Get the total bytes recieved by every network interface
+    let mut rcv_tot: Vec<u64> = Vec::new();
+    for (interface_name, ntwk) in req_net.list() {
+        if interface_name == iface {
+            //println!("{:?} rx:{} in {} secs --> {} KBps", interface_name,ntwk.received(),polling_secs,((ntwk.received() as i32 /polling_secs) / 1000) as i32 );
+            rcv_tot.push(ntwk.received() as u64);
+        }
+    }
+
+    // Total them and convert the bytes to KB
+    let ntwk_tot: u64 = rcv_tot.iter().sum();
+    //let ntwk_processed = (((ntwk_tot*8)/(*polling_secs as u64)) / 1024) as u64;
+    let ntwk_processed = (((ntwk_tot)/(*polling_secs as u64)) / 1000) as u64;
+    ntwk_processed
+}
+
+// -------------------------------------------------------------------------
+
+// Get the network (up) usage for an interface
+fn get_iface_ntwk_up(   req_net: &sysinfo::Networks,
+                        polling_secs: &i32,
+                        iface: &str) -> u64{
+
+    // Get the total bytes sent by every network interface
+    let mut snd_tot: Vec<u64> = Vec::new();
+    for (interface_name, ntwk) in req_net.list() {
+        if interface_name == iface {
+            //println!("{:?} rx:{} in {} secs --> {} KBps", interface_name,ntwk.transmitted(),polling_secs,((ntwk.transmitted() as i32 /polling_secs) / 1000) as i32 );
+            snd_tot.push(ntwk.transmitted() as u64);
+        }
+    }
+
+    // Total them and convert the bytes to KB
+    let ntwk_tot: u64 = snd_tot.iter().sum();
+    //let ntwk_processed: u64 = (((ntwk_tot * 8) / (*polling_secs as u64)) / 1024) as u64;
+    let ntwk_processed: u64 = (((ntwk_tot) / (*polling_secs as u64)) / 1000) as u64;
+    ntwk_processed
+}
 
 // -------------------------------------------------------------------------
 
@@ -89,7 +170,7 @@ fn main() {
     let mut current_sys = sysinfo::System::new_all();
     current_sys.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
     //.refresh_cpu_specifics(CpuRefreshKind::everything());
-    
+
     let _current_stats_length =  stats.len();
 
     loop {
@@ -113,5 +194,5 @@ fn main() {
 
     }
 
-}  
+}
 //JSON="{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsagePercent % \rUsed     : $memUsed MB\rAverage  : $averageUsage MB\rTotal    : $memTotal MB\",\"tooltip\":\"$TEXT\rAvg.Usage: $averageUsage\udb84\ude78\rUsed     : $memUsed MB\rTotal    : $memTotal MB\",\"class\":\"\",\"percentage\":$memUsage}"

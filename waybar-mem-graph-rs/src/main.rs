@@ -5,9 +5,9 @@ use sysinfo::System;
 use sysinfo::{CpuRefreshKind,MemoryRefreshKind};
 
 const CPU_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CPU_CHARS: &[&str]= &["a","b","c","d","e","f","g","h","i","j"];
+const CPU_CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
 const MEM_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const MEM_CHARS: &[&str]= &["a","b","c","d","e","f","g","h","i","j"];
+const MEM_CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -171,7 +171,7 @@ fn main() {
     let mut current_sys = sysinfo::System::new_all();
     current_sys.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
     //.refresh_cpu_specifics(CpuRefreshKind::everything());
-    
+
     let _current_stats_length =  stats.len();
 
     loop {
@@ -195,5 +195,5 @@ fn main() {
 
     }
 
-}  
+}
 //JSON="{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsagePercent % \rUsed     : $memUsed MB\rAverage  : $averageUsage MB\rTotal    : $memTotal MB\",\"tooltip\":\"$TEXT\rAvg.Usage: $averageUsage\udb84\ude78\rUsed     : $memUsed MB\rTotal    : $memTotal MB\",\"class\":\"\",\"percentage\":$memUsage}"
