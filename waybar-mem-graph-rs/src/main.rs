@@ -191,7 +191,7 @@ fn main() {
         thread::sleep(sleep_duration);
 
         let mem_chart = get_single_chart(&stats,MEM_CHARS,MEM_COLORS);
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}%\rUsed     : {} MB\rAverage  : {} MB\rTotal    : {} MB\",\"percentage\":{}}}",&mem_chart,&mem_chart,&stats_avg,&stats_used,&stats_avgmb,&stats_total,stats[stats.len()-1] as i32);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}%\\rUsed     : {} MB\\rAverage  : {} MB\\rTotal    : {} MB\",\"percentage\":{}}}",&mem_chart,&mem_chart,&stats_avg,&stats_used,&stats_avgmb,&stats_total,stats[stats.len()-1] as i32);
 
     }
 

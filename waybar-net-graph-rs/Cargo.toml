@@ -1,5 +1,5 @@
 [package]
-name = "waybar-mem-graph-rs"
+name = "waybar-net-graph-rs"
 version = "0.1.0"
 edition = "2021"
 
