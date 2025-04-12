@@ -1,5 +1,5 @@
 
-use std::env::args;
+use std::env;
 use std::{thread, time::Duration};
 use sysinfo::System;
 use sysinfo::{CpuRefreshKind,MemoryRefreshKind};
@@ -99,7 +99,8 @@ fn main() {
         if stats.len() == history as usize{
             stats.remove(0);
         }
-        stats.push(cpu_avg);
+        stats.push(mem_avg);
+
         let stats_total = current_sys.total_memory();
         let stats_used = current_sys.used_memory();
         let stats_free = (stats_total-stats_used);
