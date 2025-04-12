@@ -27,21 +27,6 @@ fn display_help() {
 // -------------------------------------------------------------------------
 
 
-// Get the  chart
-fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> String {
-
-    let mut return_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
-    let _chart_avg_percent: f32 = stats_set.iter().copied().sum::<f32>() / stats_set.len() as f32;
-
-    // Put all of the core loads into a vector
-    for one_stat in stats_set.iter(){
-        let stat_0_to_9: usize = ((one_stat * (symbols.len() as f32 - 1.0)) / 100.0) as usize;
-        return_chart.push_str(format!("<span color='{}'>{}</span>",&colors[stat_0_to_9],&symbols[stat_0_to_9]).as_str());
-    }
-    return_chart.push_str("</span>");
-    return_chart
-}
-
 // Get the  double chart with metrics un the upper middle annd metrics on bottom middle
 fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value: &u64, up_symbols:&[&str], down_symbols:&[&str],up_colors:&[&str] ,down_colors:&[&str] ) -> String {
 
@@ -65,24 +50,6 @@ fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value
     return_chart
 }
 
-// -------------------------------------------------------------------------
-
-// Get the average core usage
-fn get_cpu_use(req_sys: &mut sysinfo::System) -> f32{
-
-    //std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
-    req_sys.refresh_cpu_usage();
-    let cpu_avg: f32 = req_sys.global_cpu_usage();
-    return cpu_avg as f32;
-}
-
-// -------------------------------------------------------------------------
-
-
-// Divide the used RAM by the total RAM
-fn get_mem_use(req_sys: &sysinfo::System) -> f32{
-    (req_sys.used_memory() as f32) / (req_sys.total_memory() as f32) * 100.
-}
 // -------------------------------------------------------------------------
 
 // Get the total network (down) usage
@@ -257,4 +224,3 @@ fn main() {
     }
 
 }
-//Interface: $DEVICE\rUp       : $upSpeed KBps\rDown     : $downSpeed KBps\rCur.Speed: $TOTALSPEEDKBps KBps\rAvg.Speed: $averageSpeedKBps KBps\rHighest  : $MAXSPEED KBps

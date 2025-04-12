@@ -95,7 +95,7 @@ fn get_tot_ntwk_up( req_net: &sysinfo::Networks,
 
 // Get the network (down)  usage for an interface
 fn get_iface_ntwk_dwn(  req_net: &sysinfo::Networks,
-                        polling_secs: &i32,
+    polling_secs: &i32,
                         iface: &str) -> u64{
 
     // Get the total bytes recieved by every network interface

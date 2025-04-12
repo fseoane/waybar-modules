@@ -3,5 +3,11 @@ name = "waybar-cpu-graph-rs"
 version = "0.1.0"
 edition = "2021"
 
+[profile.release]
+strip = true  # Automatically strip symbols from the binary.
+lto = true
+codegen-units = 1
+
 [dependencies]
-sysinfo="0.34.2"
+#sysinfo="0.34.2"
+sysinfo={ version = "0.34.2", features = ["system"] }

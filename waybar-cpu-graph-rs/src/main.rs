@@ -3,8 +3,8 @@ use std::env;
 use std::{thread, time::Duration};
 use sysinfo::CpuRefreshKind;
 
-const CPU_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CPU_CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
+const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
+const CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -92,7 +92,7 @@ fn main() {
         let stats_avg: i32 = (stats_tot / stats.len() as f32) as i32;
         thread::sleep(sleep_duration);
 
-        let cpu_chart = get_single_chart(&stats,CPU_CHARS,CPU_COLORS) ;
+        let cpu_chart = get_single_chart(&stats,CHARS,COLORS) ;
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&stats_avg,stats[stats.len()-1] as i32);
 
     }
