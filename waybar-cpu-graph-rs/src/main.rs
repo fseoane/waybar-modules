@@ -93,7 +93,7 @@ fn main() {
         thread::sleep(sleep_duration);
 
         let cpu_chart = get_single_chart(&stats,CPU_CHARS,CPU_COLORS) ;
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage:{}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&stats_avg,stats[stats.len()-1] as i32);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&stats_avg,stats[stats.len()-1] as i32);
 
     }
 

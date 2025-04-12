@@ -101,15 +101,15 @@ fn main() {
         }
         stats.push(mem_avg);
 
-        let stats_total = current_sys.total_memory();
-        let stats_used = current_sys.used_memory();
-        let stats_free = (stats_total-stats_used);
+        let stats_total = (current_sys.total_memory()/1000000 as u64) as i32;
+        let stats_used = (current_sys.used_memory()/1000000 as u64) as i32;
         let stats_tot: f32 = stats.iter().sum();
         let stats_avg: i32 = (stats_tot / stats.len() as f32) as i32;
+        let stats_avgmb: i32 = (stats_total as f32 * (stats_avg as f32 / 100 as f32)) as i32;
         thread::sleep(sleep_duration);
 
-        let mem_chart = get_single_chart(&stats,MEM_CHARS,MEM_COLORS) ;
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage:{}%\rUsed     : {} MB\rAverage  : {} MB\rTotal    : {} MB\",\"percentage\":{}}}",&mem_chart,&mem_chart,&stats_avg,&stats_used,&stats_free,&stats_total,stats[stats.len()-1] as i32);
+        let mem_chart = get_single_chart(&stats,MEM_CHARS,MEM_COLORS);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}%\rUsed     : {} MB\rAverage  : {} MB\rTotal    : {} MB\",\"percentage\":{}}}",&mem_chart,&mem_chart,&stats_avg,&stats_used,&stats_avgmb,&stats_total,stats[stats.len()-1] as i32);
 
     }
 
