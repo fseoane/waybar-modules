@@ -1,10 +1,13 @@
 
-use std::env;
+use std::env::args;
 use std::{thread, time::Duration};
-use sysinfo::CpuRefreshKind;
+use sysinfo::System;
+use sysinfo::{CpuRefreshKind,MemoryRefreshKind};
 
 const CPU_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
 const CPU_CHARS: &[&str]= &["a","b","c","d","e","f","g","h","i","j"];
+const MEM_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
+const MEM_CHARS: &[&str]= &["a","b","c","d","e","f","g","h","i","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -47,6 +50,14 @@ fn get_cpu_use(req_sys: &mut sysinfo::System) -> f32{
 // -------------------------------------------------------------------------
 
 
+// Divide the used RAM by the total RAM
+fn get_mem_use(req_sys: &sysinfo::System) -> f32{
+    (req_sys.used_memory() as f32) / (req_sys.total_memory() as f32) * 100.
+}
+
+// -------------------------------------------------------------------------
+
+
 fn main() {
     let mut history = 15;
     let mut interval: u32 = 2;
@@ -76,25 +87,30 @@ fn main() {
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();
-    current_sys.refresh_cpu_specifics(CpuRefreshKind::everything());
+    current_sys.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
+    //.refresh_cpu_specifics(CpuRefreshKind::everything());
     
     let _current_stats_length =  stats.len();
 
     loop {
         // Call each function to get all the values we need
-        let cpu_avg = get_cpu_use(&mut current_sys);
+        let mem_avg = get_mem_use(&mut current_sys);
 
         if stats.len() == history as usize{
             stats.remove(0);
         }
         stats.push(cpu_avg);
+        let stats_total = current_sys.total_memory();
+        let stats_used = current_sys.used_memory();
+        let stats_free = (stats_total-stats_used);
         let stats_tot: f32 = stats.iter().sum();
         let stats_avg: i32 = (stats_tot / stats.len() as f32) as i32;
         thread::sleep(sleep_duration);
 
-        let cpu_chart = get_single_chart(&stats,CPU_CHARS,CPU_COLORS) ;
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage:{}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&stats_avg,stats[stats.len()-1] as i32);
+        let mem_chart = get_single_chart(&stats,MEM_CHARS,MEM_COLORS) ;
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage:{}%\rUsed     : {} MB\rAverage  : {} MB\rTotal    : {} MB\",\"percentage\":{}}}",&mem_chart,&mem_chart,&stats_avg,&stats_used,&stats_free,&stats_total,stats[stats.len()-1] as i32);
 
     }
 
-}
+}  
+//JSON="{\"text\":\"$TEXT\",\"alt\":\"Avg.Usage: $averageUsagePercent % \rUsed     : $memUsed MB\rAverage  : $averageUsage MB\rTotal    : $memTotal MB\",\"tooltip\":\"$TEXT\rAvg.Usage: $averageUsage\udb84\ude78\rUsed     : $memUsed MB\rTotal    : $memTotal MB\",\"class\":\"\",\"percentage\":$memUsage}"

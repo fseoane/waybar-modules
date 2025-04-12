@@ -1,0 +1,13 @@
+{
+    "position": "top",
+    "modules-left": [],
+    "modules-center": ["custom/cpu-graph"],
+    "modules-right": [],
+    "custom/cpu-graph": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "/home/efe/Dev/waybar-modules/v0/waybar-cpu-graph-rs/target/debug/waybar-cpu-graph-rs --interval-seconds 1"
+    }
+
+
+}
