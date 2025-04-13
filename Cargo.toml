@@ -3,7 +3,8 @@ resolver = "2"
 members = [
     "waybar-cpu-graph-rs",
     "waybar-mem-graph-rs",
-    "waybar-net-graph-rs"
+    "waybar-net-graph-rs",
+	"waybar-archupdates-rs"
 ]
 
 [profile.release]

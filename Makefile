@@ -3,6 +3,7 @@ CARGO := cargo
 JQ := jq
 MESON := meson
 
+default: all
 
 all:
 	$(CARGO) clean
@@ -16,3 +17,6 @@ all:
 
 	rm -f ~/dot.files/.config/waybar/scripts/netgraph/netgraph-rs
 	cp target/release/netgraph-rs ~/dot.files/.config/waybar/scripts/netgraph/
+
+	rm -f ~/dot.files/.config/waybar/scripts/updates/archupdates-rs
+	cp target/release/archupdates-rs ~/dot.files/.config/waybar/scripts/updates/
