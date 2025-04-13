@@ -74,12 +74,11 @@ fn main() {
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();
-    current_sys.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
 
     let _current_stats_length =  stats.len();
 
     loop {
-        // Call each function to get all the values we need
+        current_sys.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
         let mem_avg = get_mem_use(&mut current_sys);
 
         if stats.len() == history as usize{

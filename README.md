@@ -11,7 +11,7 @@ Those modules are:
   ![1744548771610](images/README/1744548771610.png)
 * memory usage graph
 
-  ![1744549119519](images/README/1744549119519.png)
+  ![1744551508486](images/README/1744551508486.png)
 * network usage graph
 
   ![1744548996563](images/README/1744548996563.png)![1744549237965](images/README/1744549237965.png)
