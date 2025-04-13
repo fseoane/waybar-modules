@@ -7,10 +7,17 @@ These modules are NOT based in CFFI but based on returning a json in the format:
 Those modules are:
 
 * cpu usage graph
-  * instructions [](https://)
+
+  ![1744548771610](images/README/1744548771610.png)
 * memory usage graph
+
+  ![1744549119519](images/README/1744549119519.png)
 * network usage graph
+
+  ![1744548996563](images/README/1744548996563.png)
 * updates (for Arch linux with both pacman and aur updates)
+
+  ![1744548548826](images/README/1744548548826.png)
 
 You may find a HOWTO_USE.md file on each module folder with more detailed instructions on how to use and integraate them on waybar.
 
