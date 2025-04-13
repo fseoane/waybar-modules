@@ -206,7 +206,7 @@ fn main() {
         if max_up_stats > highest{
             highest = max_up_stats;
         }
-        let limits = vec![10,20,30,50,75,100,200,300,400,500,750,1000];
+        let limits = vec![5,10,15,20,30,50,75,100,200,300,400,500,750,1000];
         let mut max = 0;
         for limit in limits{
             if highest % limit == highest {
