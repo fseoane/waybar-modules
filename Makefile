@@ -1,7 +1,5 @@
-BINDGEN := bindgen
+
 CARGO := cargo
-JQ := jq
-MESON := meson
 
 default: all
 
