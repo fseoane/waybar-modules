@@ -216,7 +216,6 @@ fn main() {
         let net_chart = get_double_chart(&up_stats,&down_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Interface: {}\\rUp       : {} KBps\\rDown     : {} KBps\\rHighest  : {} KBps\\rAvg.Up   : {} KBps\\rAvg.Down : {} KBps\",\"percentage\":{}}}",&net_chart,&net_chart,&interface,up_stats[up_stats.len()-1] as i32,down_stats[down_stats.len()-1] as i32,&max,&up_stats_avg,&down_stats_avg,&sum_stats_avg);
         thread::sleep(sleep_duration);
-
     }
 
 }
