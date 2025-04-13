@@ -1,4 +1,4 @@
-https://github.com/fseoane/waybar-modules
+https://github.com/fseoane/waybar-modules.git
 ----------------------------------------------------------------
 Why not just get memory usage statistics in custom waybar module?
 

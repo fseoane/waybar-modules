@@ -1,4 +1,4 @@
-https://github.com/fseoane/waybar-modules
+https://github.com/fseoane/waybar-modules.git
 ----------------------------------------------------------------
 Why not just get network usage statistics in custom waybar module?
 

@@ -1,4 +1,4 @@
-https://github.com/coffebar/waybar-module-pacman-updates
+https://github.com/fseoane/waybar-modules.git
 ----------------------------------------------------------------
 Why not just exec checkupdates in custom waybar module?
 
