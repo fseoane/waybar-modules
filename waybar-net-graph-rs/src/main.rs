@@ -5,9 +5,6 @@ use sysinfo::System;
 use sysinfo::{Networks,NetworkData};
 use sysinfo::{CpuRefreshKind,MemoryRefreshKind};
 
-const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CHARS: &[&str]=     &["b","c","d","e","f","g","h","i","j","j"];            // font efe-graph.ttf
-
 const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
 const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#67f08d","#57f08d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
 const CHARSUP: &[&str]=   &["b","c","d","e","f","g","h","i","j","j"];             // font efe-graph.ttf
@@ -140,8 +137,8 @@ fn main() {
     let mut interval: i32 = 2;
     let mut interface = "total";
     let args: Vec<String> = env::args().collect();
-    let mut up_stats: Vec<u64> = Vec::new();
-    let mut down_stats: Vec<u64> = Vec::new();
+    let mut up_stats: Vec<u64> =vec![0; history];
+    let mut down_stats: Vec<u64> =vec![0; history];
 
 
     // gather parameters from command line

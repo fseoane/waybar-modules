@@ -4,10 +4,8 @@ use std::{thread, time::Duration};
 use sysinfo::System;
 use sysinfo::{CpuRefreshKind,MemoryRefreshKind};
 
-const CPU_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CPU_CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
-const MEM_COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const MEM_CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
+const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
+const CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -38,103 +36,10 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
 
 // -------------------------------------------------------------------------
 
-// Get the average core usage
-fn get_cpu_use(req_sys: &mut sysinfo::System) -> f32{
-
-    //std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
-    req_sys.refresh_cpu_usage();
-    let cpu_avg: f32 = req_sys.global_cpu_usage();
-    return cpu_avg as f32;
-}
-
-// -------------------------------------------------------------------------
-
 
 // Divide the used RAM by the total RAM
 fn get_mem_use(req_sys: &sysinfo::System) -> f32{
     (req_sys.used_memory() as f32) / (req_sys.total_memory() as f32) * 100.
-}
-
-// -------------------------------------------------------------------------
-
-// Get the total network (down) usage
-fn get_tot_ntwk_dwn(req_net: &sysinfo::Networks,
-    polling_secs: &i32) -> u64{
-    // Get the total bytes recieved by every network interface
-    let mut rcv_tot: Vec<u64> = Vec::new();
-    for (_interface_name, ntwk) in req_net.list() {
-        rcv_tot.push(ntwk.received() as u64);
-    }
-
-    // Total them and convert the bytes to KB
-    let ntwk_tot: u64 = rcv_tot.iter().sum();
-    //let ntwk_processed = (((ntwk_tot*8)/(*polling_secs as u64)) / 1024) as u64;
-    let ntwk_processed = (((ntwk_tot)/(*polling_secs as u64)) / 1000) as u64;
-    ntwk_processed
-}
-
-// -------------------------------------------------------------------------
-
-// Get the total network (up) usage
-fn get_tot_ntwk_up( req_net: &sysinfo::Networks,
-    polling_secs: &i32) -> u64{
-    // Get the total bytes sent by every network interface
-    let mut snd_tot: Vec<u64> = Vec::new();
-    for (_interface_name, ntwk) in req_net.list() {
-        snd_tot.push(ntwk.transmitted() as u64);
-    }
-
-    // Total them and convert the bytes to KB
-    let ntwk_tot: u64 = snd_tot.iter().sum();
-    //let ntwk_processed = (((ntwk_tot*8)/(*polling_secs as u64)) / 1024) as u64;
-    let ntwk_processed = (((ntwk_tot)/(*polling_secs as u64)) / 1000) as u64;
-    ntwk_processed
-}
-
-// -------------------------------------------------------------------------
-
-// Get the network (down)  usage for an interface
-fn get_iface_ntwk_dwn(  req_net: &sysinfo::Networks,
-    polling_secs: &i32,
-                        iface: &str) -> u64{
-
-    // Get the total bytes recieved by every network interface
-    let mut rcv_tot: Vec<u64> = Vec::new();
-    for (interface_name, ntwk) in req_net.list() {
-        if interface_name == iface {
-            //println!("{:?} rx:{} in {} secs --> {} KBps", interface_name,ntwk.received(),polling_secs,((ntwk.received() as i32 /polling_secs) / 1000) as i32 );
-            rcv_tot.push(ntwk.received() as u64);
-        }
-    }
-
-    // Total them and convert the bytes to KB
-    let ntwk_tot: u64 = rcv_tot.iter().sum();
-    //let ntwk_processed = (((ntwk_tot*8)/(*polling_secs as u64)) / 1024) as u64;
-    let ntwk_processed = (((ntwk_tot)/(*polling_secs as u64)) / 1000) as u64;
-    ntwk_processed
-}
-
-// -------------------------------------------------------------------------
-
-// Get the network (up) usage for an interface
-fn get_iface_ntwk_up(   req_net: &sysinfo::Networks,
-                        polling_secs: &i32,
-                        iface: &str) -> u64{
-
-    // Get the total bytes sent by every network interface
-    let mut snd_tot: Vec<u64> = Vec::new();
-    for (interface_name, ntwk) in req_net.list() {
-        if interface_name == iface {
-            //println!("{:?} rx:{} in {} secs --> {} KBps", interface_name,ntwk.transmitted(),polling_secs,((ntwk.transmitted() as i32 /polling_secs) / 1000) as i32 );
-            snd_tot.push(ntwk.transmitted() as u64);
-        }
-    }
-
-    // Total them and convert the bytes to KB
-    let ntwk_tot: u64 = snd_tot.iter().sum();
-    //let ntwk_processed: u64 = (((ntwk_tot * 8) / (*polling_secs as u64)) / 1024) as u64;
-    let ntwk_processed: u64 = (((ntwk_tot) / (*polling_secs as u64)) / 1000) as u64;
-    ntwk_processed
 }
 
 // -------------------------------------------------------------------------
@@ -144,7 +49,7 @@ fn main() {
     let mut history = 15;
     let mut interval: u32 = 2;
     let args: Vec<String> = env::args().collect();
-    let mut stats: Vec<f32> = Vec::new();
+    let mut stats: Vec<f32> = vec![0.0; history];
 
 
     // gather parameters from command line
@@ -170,7 +75,6 @@ fn main() {
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();
     current_sys.refresh_memory_specifics(MemoryRefreshKind::nothing().with_ram());
-    //.refresh_cpu_specifics(CpuRefreshKind::everything());
 
     let _current_stats_length =  stats.len();
 
@@ -190,7 +94,7 @@ fn main() {
         let stats_avgmb: i32 = (stats_total as f32 * (stats_avg as f32 / 100 as f32)) as i32;
         thread::sleep(sleep_duration);
 
-        let mem_chart = get_single_chart(&stats,MEM_CHARS,MEM_COLORS);
+        let mem_chart = get_single_chart(&stats,CHARS,COLORS);
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}%\\rUsed     : {} MB\\rAverage  : {} MB\\rTotal    : {} MB\",\"percentage\":{}}}",&mem_chart,&mem_chart,&stats_avg,&stats_used,&stats_avgmb,&stats_total,stats[stats.len()-1] as i32);
 
     }

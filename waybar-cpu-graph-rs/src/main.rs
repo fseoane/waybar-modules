@@ -51,7 +51,7 @@ fn main() {
     let mut history = 15;
     let mut interval: u32 = 2;
     let args: Vec<String> = env::args().collect();
-    let mut stats: Vec<f32> = Vec::new();
+    let mut stats: Vec<f32> = vec![0.0; history];
 
 
     // gather parameters from command line
