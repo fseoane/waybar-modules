@@ -1,9 +1,6 @@
 
 use std::env;
 use std::{thread, time::Duration};
-use sysinfo::System;
-use sysinfo::{Networks,NetworkData};
-use sysinfo::{CpuRefreshKind,MemoryRefreshKind};
 
 const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
 const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#67f08d","#57f08d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
@@ -137,8 +134,7 @@ fn main() {
     let mut interval: i32 = 2;
     let mut interface = "total";
     let args: Vec<String> = env::args().collect();
-    let mut up_stats: Vec<u64> =vec![0; history];
-    let mut down_stats: Vec<u64> =vec![0; history];
+
 
 
     // gather parameters from command line
@@ -163,6 +159,9 @@ fn main() {
     if (interval == 0) || (history == 0)  {
         panic!("--interval and --history must be greater than 0");
     }
+
+    let mut up_stats: Vec<u64> =vec![0; history];
+    let mut down_stats: Vec<u64> =vec![0; history];
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_net = sysinfo::Networks::new_with_refreshed_list();
@@ -201,10 +200,10 @@ fn main() {
             Some(v) => *v,
             None => 0 as u64,
         };
-        if (max_down_stats > max){
+        if max_down_stats > max{
             max = max_down_stats;
         }
-        if (max_up_stats > max){
+        if max_up_stats > max{
             max = max_up_stats;
         }
 
@@ -212,7 +211,7 @@ fn main() {
         let up_stats_avg: i32 = (up_stats_tot / up_stats.len() as u64) as i32;
         let down_stats_tot: u64 = down_stats.iter().sum();
         let down_stats_avg: i32 = (down_stats_tot / down_stats.len() as u64) as i32;
-        let sum_stats_avg: i32 = ((up_stats_avg + down_stats_avg) / 2 ) ;
+        let sum_stats_avg: i32 = (up_stats_avg + down_stats_avg) / 2  ;
 
         let net_chart = get_double_chart(&up_stats,&down_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Interface: {}\\rUp       : {} KBps\\rDown     : {} KBps\\rHighest  : {} KBps\\rAvg.Up   : {} KBps\\rAvg.Down : {} KBps\",\"percentage\":{}}}",&net_chart,&net_chart,&interface,up_stats[up_stats.len()-1] as i32,down_stats[down_stats.len()-1] as i32,&max,&up_stats_avg,&down_stats_avg,&sum_stats_avg);

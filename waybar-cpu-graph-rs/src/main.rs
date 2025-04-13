@@ -51,7 +51,7 @@ fn main() {
     let mut history = 15;
     let mut interval: u32 = 2;
     let args: Vec<String> = env::args().collect();
-    let mut stats: Vec<f32> = vec![0.0; history];
+
 
 
     // gather parameters from command line
@@ -73,6 +73,8 @@ fn main() {
     if (interval == 0) || (history == 0)  {
         panic!("--interval and --history must be greater than 0");
     }
+
+    let mut stats: Vec<f32> = vec![0.0; history];
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();

@@ -1,8 +1,7 @@
 
 use std::env;
 use std::{thread, time::Duration};
-use sysinfo::System;
-use sysinfo::{CpuRefreshKind,MemoryRefreshKind};
+use sysinfo::MemoryRefreshKind;
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
 const CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
@@ -49,7 +48,6 @@ fn main() {
     let mut history = 15;
     let mut interval: u32 = 2;
     let args: Vec<String> = env::args().collect();
-    let mut stats: Vec<f32> = vec![0.0; history];
 
 
     // gather parameters from command line
@@ -71,6 +69,8 @@ fn main() {
     if (interval == 0) || (history == 0)  {
         panic!("--interval and --history must be greater than 0");
     }
+
+    let mut stats: Vec<f32> = vec![0.0; history];
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();

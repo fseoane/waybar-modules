@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+members = [
+    "waybar-cpu-graph-rs",
+    "waybar-mem-graph-rs",
+    "waybar-net-graph-rs"
+]
+
+[profile.release]
+strip = true  # Automatically strip symbols from the binary.
+lto = true
+codegen-units = 1
