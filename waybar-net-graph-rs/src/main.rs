@@ -171,7 +171,7 @@ fn main() {
 
         let stat_dwn ;
         let stat_up ;
-        let mut max: u64 = 1;
+        let mut highest: u64 = 1;
 
         if interface == "total" {
             stat_dwn = get_tot_stat_dwn(&current_net,&interval);
@@ -200,11 +200,19 @@ fn main() {
             Some(v) => *v,
             None => 0 as u64,
         };
-        if max_down_stats > max{
-            max = max_down_stats;
+        if max_down_stats > highest{
+            highest = max_down_stats;
         }
-        if max_up_stats > max{
-            max = max_up_stats;
+        if max_up_stats > highest{
+            highest = max_up_stats;
+        }
+        let limits = vec![10,20,30,50,75,100,200,300,400,500,750,1000];
+        let mut max = 0;
+        for limit in limits{
+            if highest % limit == highest {
+                max = limit;
+                break;
+            }
         }
 
         let up_stats_tot: u64 = up_stats.iter().sum();
