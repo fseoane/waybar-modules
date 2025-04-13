@@ -4,7 +4,7 @@ use std::{thread, time::Duration};
 use sysinfo::CpuRefreshKind;
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
+const CHARS: &[&str]= &[" ","b","c","d","e","f","g","h","i","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -52,8 +52,6 @@ fn main() {
     let mut interval: u32 = 2;
     let args: Vec<String> = env::args().collect();
 
-
-
     // gather parameters from command line
     if args.len() > 1 {
         for (i, arg) in args.iter().enumerate() {
@@ -70,7 +68,7 @@ fn main() {
             }
         }
     }
-    if (interval == 0) || (history == 0)  {
+    if (interval == 0) || (history == 0) {
         panic!("--interval and --history must be greater than 0");
     }
 
@@ -80,16 +78,15 @@ fn main() {
     let mut current_sys = sysinfo::System::new_all();
     current_sys.refresh_cpu_specifics(CpuRefreshKind::everything());
 
-    let _current_stats_length =  stats.len();
-
     loop {
         // Call each function to get all the values we need
         let cpu_avg = get_cpu_use(&mut current_sys);
 
-        if stats.len() == history as usize{
+        if stats.len() == history{
             stats.remove(0);
         }
         stats.push(cpu_avg);
+
         let stats_tot: f32 = stats.iter().sum();
         let stats_avg: i32 = (stats_tot / stats.len() as f32) as i32;
         thread::sleep(sleep_duration);

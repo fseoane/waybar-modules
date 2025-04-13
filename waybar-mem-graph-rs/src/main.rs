@@ -4,7 +4,7 @@ use std::{thread, time::Duration};
 use sysinfo::MemoryRefreshKind;
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CHARS: &[&str]= &["b","c","d","e","f","g","h","i","j","j"];
+const CHARS: &[&str]= &[" ","b","c","d","e","f","g","h","i","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
