@@ -12,50 +12,35 @@ This small program will give you fast updates with less network usage. After you
 
 How to use
 
-    install binary waybar-arch-updates-rs to your PATH
-    add to ~/.config/waybar/config
+1.-install binary archupdates-rs wherever your user have access (I use to put them in a script folder inside .config/waybar/ folder)
+2.-add to ~/.config/waybar/config
 
-"custom/updates": {
-    "format": "{} {icon}",
-    "return-type": "json",
-    "format-icons": {
-        "has-updates": "󱍷",
-        "updated": "󰂪"
-    },
-    "exec-if": "which waybar-arc-updates-rs",
-    "exec": "waybar-arch-updates-rs --interval-seconds 5 --network-interval-seconds 300"
-}
-
-    add "custom/updates" to one of modules-left, modules-center or modules-right
-    install nerd font to see icons or change icons as you like and restart waybar
-
-Options
-
---no-zero-output - don't print "0" if there are no updates available.
-
---interval-seconds - interval to run checkupdates without network usage.
-
---network-interval-seconds - interval to run checkupdates with network usage.
-
---tooltip-align-columns - format tooltip as a table using given monospaced font.
+        "custom/updatepackages": {
+            "exec": "$HOME/.config/waybar/scripts/updates/archupdates-rs --interval 900",
+            "return-type": "json",
+            "hide-empty-text": true,
+            "format": "<span font='12'>󰏖</span>  {}",
+            "tooltip": true,
+            "tooltip-format": "<span font='10'>{alt}</span>",
+            "escape": true,
+            "exec-on-event": true,
+            "on-click": "pacman -Syu",                      // install pacman updates only
+            "on-click-middle": "pacman -Syu; yay -Syu",     // install pacman and aur updates
+            "on-click-right": "yay -Syu",                   // install aur updates only
+        },
 
 
-How to hide the module when there are no updates available
-waybar config
+    where cli options are
+    --interval - interval to gather the updates (defaults to 900 seconds or 15 minutes).
 
-"custom/updates": {
-    "format": "{} {icon}",
-    "return-type": "json",
-    "format-icons": {
-        "has-updates": "󱍷",
-        "updated": ""
-    },
-    "exec-if": "which waybar-arch-updates-rs",
-    "exec": "waybar-arc-updates-rs --no-zero-output"
-}
+3.-add "custom/updatepackages" to one of modules-left, modules-center or modules-right
+4.-set your style in .config/waybar/style.css
 
-style.css
-
-#custom-updates {
-	background-color: transparent;
-}
+        #custom-updatepackages{
+            color: <your foreground color>;
+            background-color: <your background color>;
+            margin: 0px 0px 0px 0px;
+            padding: 0px 0px 0px 0px;
+            font-size: 13px;
+            text-shadow: none;
+        }
