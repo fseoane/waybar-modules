@@ -13,6 +13,54 @@ fn display_help() {
     println!();
 }
 
+// check updates from network
+fn sync_database() {
+    // checkupdates --nocolor
+    Command::new("checkupdates")
+        .args(["--nocolor"])
+        .output()
+        .expect("failed to execute process");
+}
+
+// get updates info without network operations
+fn get_updates() -> (u16, String) {
+    // checkupdates --nosync --nocolor
+    let output = Command::new("checkupdates")
+        .args(["--nosync", "--nocolor"])
+        .output()
+        .expect("failed to execute process");
+    match output.status.code() {
+        Some(_code) => {
+            let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+            if stdout.is_empty() {
+                return (0, "0".to_string());
+            }
+            ((stdout.split(" -> ").count() as u16) - 1, stdout)
+        }
+        None => (0, "0".to_string()),
+    }
+}
+
+
+// get updates info without network operations
+fn get_aur_updates() -> (u16, String) {
+    // checkupdates --nosync --nocolor
+    let output = Command::new("checkupdates-with-aur")
+        .args(["--nosync", "--nocolor"])
+        .output()
+        .expect("failed to execute process");
+    match output.status.code() {
+        Some(_code) => {
+            let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+            if stdout.is_empty() {
+                return (0, "0".to_string());
+            }
+            ((stdout.split(" -> ").count() as u16) - 1, stdout)
+        }
+        None => (0, "0".to_string()),
+    }
+}
+
 fn main() -> Result<(), Error> {
 
 
@@ -169,52 +217,3 @@ fn main() -> Result<(), Error> {
         thread::sleep(sleep_duration);
     }
 }
-
-// check updates from network
-fn sync_database() {
-    // checkupdates --nocolor
-    Command::new("checkupdates")
-        .args(["--nocolor"])
-        .output()
-        .expect("failed to execute process");
-}
-
-// get updates info without network operations
-fn get_updates() -> (u16, String) {
-    // checkupdates --nosync --nocolor
-    let output = Command::new("checkupdates")
-        .args(["--nosync", "--nocolor"])
-        .output()
-        .expect("failed to execute process");
-    match output.status.code() {
-        Some(_code) => {
-            let stdout = String::from_utf8_lossy(&output.stdout).to_string();
-            if stdout.is_empty() {
-                return (0, "0".to_string());
-            }
-            ((stdout.split(" -> ").count() as u16) - 1, stdout)
-        }
-        None => (0, "0".to_string()),
-    }
-}
-
-
-// get updates info without network operations
-fn get_aur_updates() -> (u16, String) {
-    // checkupdates --nosync --nocolor
-    let output = Command::new("checkupdates-with-aur")
-        .args(["--nosync", "--nocolor"])
-        .output()
-        .expect("failed to execute process");
-    match output.status.code() {
-        Some(_code) => {
-            let stdout = String::from_utf8_lossy(&output.stdout).to_string();
-            if stdout.is_empty() {
-                return (0, "0".to_string());
-            }
-            ((stdout.split(" -> ").count() as u16) - 1, stdout)
-        }
-        None => (0, "0".to_string()),
-    }
-}
-

@@ -4,6 +4,7 @@ members = [
     "waybar-cpu-graph-rs",
     "waybar-mem-graph-rs",
     "waybar-net-graph-rs",
+    "waybar-temp-graph-rs",
 	"waybar-archupdates-rs"
 ]
 
