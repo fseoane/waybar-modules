@@ -217,3 +217,4 @@ fn get_aur_updates() -> (u16, String) {
         None => (0, "0".to_string()),
     }
 }
+
