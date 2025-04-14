@@ -199,7 +199,7 @@ fn main() {
         let stats_avg: i32 = stats_total as i32 / stats.len() as i32;
 
         let components_temp = temperature.1;
-        let components_temp_item_maxlen: usize = match components_temp 
+        let components_temp_item_maxlen: usize = match components_temp
             .iter()
             .map(|f|f.len()).max(){
                 Some(m) => m,
@@ -209,7 +209,7 @@ fn main() {
         for line in components_temp.iter(){
             let linelen = line.len();
             let tabbedline = line.replace("-"," ".repeat(components_temp_item_maxlen-(linelen-1)).as_str());
-            components_temp_tabulada.push_str(format!("{}\n",&tabbedline).as_str());
+            components_temp_tabulada.push_str(format!("{}\\n",&tabbedline).as_str());
         }
 
 
