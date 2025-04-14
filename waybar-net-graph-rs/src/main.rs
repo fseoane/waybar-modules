@@ -206,13 +206,16 @@ fn main() {
         if max_up_stats > highest{
             highest = max_up_stats;
         }
-        let limits = vec![5,10,15,20,30,50,75,100,200,300,400,500,750,1000];
+        let limits = vec![15,30,60,120,300,500,750,1000];
         let mut max = 0;
         for limit in limits{
             if highest % limit == highest {
                 max = limit;
                 break;
+            } else {
+                max =  highest;
             }
+
         }
 
         let up_stats_tot: u64 = up_stats.iter().sum();
@@ -223,7 +226,7 @@ fn main() {
 
         let net_chart = get_double_chart(&up_stats,&down_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Interface : {}\\rUp        : {} KBps\\rDown      : {} KBps\\rRange     : 0-{} KBps\\rAvg.Up    : {} KBps\\rAvg.Down  : {} KBps\",\"percentage\":{}}}",&net_chart,&net_chart,&interface,up_stats[up_stats.len()-1] as i32,down_stats[down_stats.len()-1] as i32,&max,&up_stats_avg,&down_stats_avg,&sum_stats_avg);
-        thread::sleep(sleep_duration);                                                                                               
+        thread::sleep(sleep_duration);
     }
 
 }
