@@ -39,14 +39,13 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
 // Get the average core usage
 fn get_cpu_use(req_sys: &mut sysinfo::System) -> (f32,Vec<String>){
 
-    //std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
     let mut cores_usage:Vec<String> = Vec::new();
 
     for core in req_sys.cpus() {
         cores_usage.push(format!("{}-{}",core.name(),core.cpu_usage() as i32));
     }
     let cpu_avg: f32 = req_sys.global_cpu_usage();
-    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
 
     // let mut cpus: Vec<f32> = Vec::new();
     // for core in req_sys.cpus() {
