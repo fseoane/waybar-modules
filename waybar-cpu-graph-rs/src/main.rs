@@ -57,11 +57,11 @@ fn get_cpu_use(req_sys: &mut sysinfo::System) -> (f32,Vec<String>){
     // // Get the average load
     // let cpu_tot: f32 = cpus.iter().sum();
     // let cpu_avg: f32 = cpu_tot / cpus.len() as f32;
-    println!("--------------");
-    //println!("cpu cores {}",cpus.len());
-    println!("cpu cores {}",num_cpus::get());
-    println!("cpu phi   {}",num_cpus::get_physical());
-    println!("cpu avg   {}",cpu_avg);
+    // println!("--------------");
+    // //println!("cpu cores {}",cpus.len());
+    // println!("cpu cores {}",num_cpus::get());
+    // println!("cpu phi   {}",num_cpus::get_physical());
+    // println!("cpu avg   {}",cpu_avg);
 
     return (cpu_avg,cores_usage);
 
