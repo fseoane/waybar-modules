@@ -179,7 +179,10 @@ fn main() -> Result<(), Error> {
             );
             let mut iterlines=0;
             for line in aur_stdout.lines(){
-                if !stdout.contains(line){
+                if stdout.contains(line) {
+                    aur_updates= aur_updates - 1;
+                }
+                else {
                     if iterlines % columns < (columns-1){
                         text_aur_stdout = text_aur_stdout + line + "\t | ";
                     } else {
@@ -189,9 +192,6 @@ fn main() -> Result<(), Error> {
                         longest_line=line.len() + ( 3* (columns-1));
                     }
                     iterlines+= 1;
-                }
-                else {
-                    aur_updates= aur_updates - 1;
                 }
             };
 
