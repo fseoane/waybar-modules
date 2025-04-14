@@ -12,7 +12,8 @@ fn display_help() {
     println!("  --interval <seconds>   Set the interval between updates (default: 2)");
     println!("  --history <number>     Set the number of reading to show in the graph (default: 10)");
     println!("  --item <sensor_name>   Set the name of temperature sensor/item to show in the graph (default: max)");
-    println!("                            --item max      - means the return will be the average of temperature from all sensors");
+    println!("
+           --item max      - means the return will be the average of temperature from all sensors");
     println!("                            --item avg      - means the return will be the max of temperature from all sensors");
     println!("                            --item '<name>' - means the return will be the temperature from that sensor");
     println!();
@@ -44,6 +45,7 @@ fn get_avg_temp(req_comp: &sysinfo::Components) -> (f32,Vec<String>){
     let mut avg_temp: f32 = 0.0;
     let mut temp: f32 = 0.0;
     let mut components_temp:Vec<String> = Vec::new();
+    let mut num_non_zero_components: i32 = 0;
 
     let temp_components_count:i32 = req_comp.list().len() as i32;
     if temp_components_count >0 {
@@ -58,14 +60,17 @@ fn get_avg_temp(req_comp: &sysinfo::Components) -> (f32,Vec<String>){
                 },
                 None => 0.0,
             };
-            avg_temp += temp;
-            // if comp.temperature()>0.0
-            // {
-            //     avg_temp += comp.temperature();
-            // }
-            components_temp.push(format!("{}-{}°C",comp.label(),temp as i32 ));
+            if temp > 0.0 {
+                avg_temp += temp;
+                num_non_zero_components +=1;
+                // if comp.temperature()>0.0
+                // {
+                //     avg_temp += comp.temperature();
+                // }
+                components_temp.push(format!("{}-{}°C",comp.label(),temp as i32 ));
+            }
         }
-        avg_temp = avg_temp/temp_components_count as f32;
+        avg_temp = avg_temp/num_non_zero_components as f32;
     }
     else {
         avg_temp = 0.0;
@@ -97,11 +102,8 @@ fn get_max_temp(req_comp: &sysinfo::Components) -> (f32,Vec<String>){
                 None => 0.0,
             };
 
-            if temp > max_temp
-            {
-                max_temp = temp;
-            }
-            components_temp.push(format!("{}-{}°C",comp.label(),temp as i32 ));
+            if temp > max_temp {max_temp = temp;}
+            if temp > 0.0 { components_temp.push(format!("{}-{}°C",comp.label(),temp as i32 ));}
         }
     }
     else {
@@ -174,7 +176,7 @@ fn main() {
 
     //let mut current_comp: sysinfo::Components=sysinfo::Components::new();
     let mut current_comp = sysinfo::Components::new_with_refreshed_list();
-
+    let mut temp_stat_type  = String::from("Avg.");
 
     loop {
         let temperature: (f32, Vec<String>);
@@ -185,8 +187,10 @@ fn main() {
             temperature = get_avg_temp(&current_comp);
         } else if item == "max"{
                 temperature = get_max_temp(&current_comp);
+                temp_stat_type  = String::from("Max.");
             } else {
                 temperature = get_temp_item(&current_comp,&item);
+                temp_stat_type  = item.to_string();
             }
 
 
@@ -194,9 +198,6 @@ fn main() {
             stats.remove(0);
         }
         stats.push(temperature.0);
-
-        let stats_total: f32 = stats.iter().sum();
-        let stats_avg: i32 = stats_total as i32 / stats.len() as i32;
 
         let components_temp = temperature.1;
         let components_temp_item_maxlen: usize = match components_temp
@@ -212,9 +213,8 @@ fn main() {
             components_temp_tabulada.push_str(format!("{}\\n",&tabbedline).as_str());
         }
 
-
         let temp_chart = get_single_chart(&stats,CHARS,COLORS);
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Curr.Temp: {}°C\\nAvg.Temp : {}°C\\n-----------\\n{}\",\"percentage\":{}}}",&temp_chart,&temp_chart,stats[stats.len()-1] as i32,&stats_avg,&components_temp_tabulada,stats[stats.len()-1] as i32);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"{}Temp: {}°C\\n---------------\\n{}\",\"percentage\":{}}}",&temp_chart,&temp_chart,&temp_stat_type,stats[stats.len()-1] as i32,&components_temp_tabulada,stats[stats.len()-1] as i32);
         thread::sleep(sleep_duration);
 
     }

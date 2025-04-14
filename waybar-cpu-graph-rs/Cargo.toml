@@ -11,3 +11,4 @@ codegen-units = 1
 [dependencies]
 #sysinfo="0.34.2"
 sysinfo={ version = "0.34.2", features = ["system"] }
+num_cpus = "1.0"

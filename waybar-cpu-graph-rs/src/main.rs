@@ -2,6 +2,7 @@
 use std::env;
 use std::{thread, time::Duration};
 use sysinfo::CpuRefreshKind;
+extern crate num_cpus;
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
 const CHARS: &[&str]=  &["a","b","c","d","e","f","g","h","i","j"];
@@ -36,12 +37,34 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
 // -------------------------------------------------------------------------
 
 // Get the average core usage
-fn get_cpu_use(req_sys: &mut sysinfo::System) -> f32{
+fn get_cpu_use(req_sys: &mut sysinfo::System) -> (f32,Vec<String>){
 
     //std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
-    req_sys.refresh_cpu_usage();
+    let mut cores_usage:Vec<String> = Vec::new();
+
+    for core in req_sys.cpus() {
+        cores_usage.push(format!("{}-{}",core.name(),core.cpu_usage() as i32));
+    }
     let cpu_avg: f32 = req_sys.global_cpu_usage();
-    return cpu_avg as f32;
+    std::thread::sleep(sysinfo::MINIMUM_CPU_UPDATE_INTERVAL);
+
+    // let mut cpus: Vec<f32> = Vec::new();
+    // for core in req_sys.cpus() {
+    //     cores_usage.push(format!("{}-{}",core.name(),core.cpu_usage() as i32));
+    //     cpus.push(core.cpu_usage());
+    // }
+
+    // // Get the average load
+    // let cpu_tot: f32 = cpus.iter().sum();
+    // let cpu_avg: f32 = cpu_tot / cpus.len() as f32;
+    println!("--------------");
+    //println!("cpu cores {}",cpus.len());
+    println!("cpu cores {}",num_cpus::get());
+    println!("cpu phi   {}",num_cpus::get_physical());
+    println!("cpu avg   {}",cpu_avg);
+
+    return (cpu_avg,cores_usage);
+
 }
 
 // -------------------------------------------------------------------------
@@ -72,12 +95,13 @@ fn main() {
         panic!("--interval and --history must be greater than 0");
     }
 
+
     let mut stats: Vec<f32> = vec![0.0; history];
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();
-    current_sys.refresh_cpu_specifics(CpuRefreshKind::everything());
-
+    current_sys.refresh_cpu_specifics(CpuRefreshKind::nothing().with_cpu_usage());
+    //current_sys.refresh_all();
     loop {
         // Call each function to get all the values we need
         let cpu_avg = get_cpu_use(&mut current_sys);
@@ -85,14 +109,30 @@ fn main() {
         if stats.len() == history{
             stats.remove(0);
         }
-        stats.push(cpu_avg);
+        stats.push(cpu_avg.0);
 
         let stats_tot: f32 = stats.iter().sum();
         let stats_avg: i32 = (stats_tot / stats.len() as f32) as i32;
 
+        let cores_usage = cpu_avg.1;
+        let cores_usage_item_maxlen: usize = match cores_usage
+            .iter()
+            .map(|f|f.len()).max(){
+                Some(m) => m,
+                None => 0,
+            };
+        let mut cores_usage_tabulada = String::from("");
+        for line in cores_usage.iter(){
+            let linelen = line.len();
+            let tabbedline = line.replace("-"," ".repeat(cores_usage_item_maxlen-(linelen-1)).as_str());
+            cores_usage_tabulada.push_str(format!("{}%\\n",&tabbedline).as_str());
+        }
+
         let cpu_chart = get_single_chart(&stats,CHARS,COLORS) ;
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&stats_avg,stats[stats.len()-1] as i32);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}%\\n--------------\\n{}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&stats_avg,&cores_usage_tabulada,stats[stats.len()-1] as i32);
         thread::sleep(sleep_duration);
+        current_sys.refresh_cpu_usage();
+        //current_sys.refresh_all();
 
     }
 
