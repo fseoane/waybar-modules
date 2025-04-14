@@ -14,7 +14,7 @@ Those modules are:
   ![1744551508486](images/README/1744551508486.png)
 * network usage graph
 
-  ![1744548996563](images/README/1744548996563.png)![1744549237965](images/README/1744549237965.png)
+  ![1744548996563](images/README/1744548996563.png)
 * updates (for Arch linux with both pacman and aur updates)
 
   ![1744548548826](images/README/1744548548826.png)
