@@ -6,7 +6,7 @@ use sysinfo::CpuRefreshKind;
 extern crate num_cpus;
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CHARS: &[&str]=  &["u","b","c","d","e","f","g","h","i","j"];
+const CHARS: &[&str]=  &["0","b","c","d","e","f","g","h","i","j"];
 //const CHARS: &[&str]=  &[" ","▁","▂","▃","▄","▅","▆","▇","█","█"];   // with mono nerd fonts
 
 fn display_help() {
