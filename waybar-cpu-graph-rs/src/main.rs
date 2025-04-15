@@ -6,8 +6,8 @@ use sysinfo::CpuRefreshKind;
 extern crate num_cpus;
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-//const CHARS: &[&str]=  &["a","b","c","d","e","f","g","h","i","j"];
-const CHARS: &[&str]=  &[" ","▁","▂","▃","▄","▅","▆","▇","█","█"];   // with mono nerd fonts
+const CHARS: &[&str]=  &["a","b","c","d","e","f","g","h","i","j"];
+//const CHARS: &[&str]=  &[" ","▁","▂","▃","▄","▅","▆","▇","█","█"];   // with mono nerd fonts
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -59,7 +59,7 @@ fn get_cpu_usage_from_proc() -> f32 {
         .expect("failed to execute process");
     let stdout2 = String::from_utf8_lossy(&output2.stdout).to_string();
     let stdout2_vec: Vec<String> = stdout2.split_whitespace().map(|s| s.to_string()).collect();
-    
+
     // println!("stdout1\n{} ", &stdout1);
     // println!("stdout2\n{} ", &stdout2);
 

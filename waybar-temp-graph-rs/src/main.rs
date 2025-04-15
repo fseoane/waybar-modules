@@ -3,8 +3,8 @@ use std::env;
 use std::{thread, time::Duration};
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-//const CHARS: &[&str]=  &[" ","b","c","d","e","f","g","h","i","j"];
-const CHARS: &[&str]=  &[" ","▁","▂","▃","▄","▅","▆","▇","█","█"];   // with mono nerd fonts
+const CHARS: &[&str]=  &["a","b","c","d","e","f","g","h","i","j"];
+//const CHARS: &[&str]=  &[" ","▁","▂","▃","▄","▅","▆","▇","█","█"];   // with mono nerd fonts
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
