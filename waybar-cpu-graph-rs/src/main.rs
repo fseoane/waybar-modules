@@ -28,7 +28,9 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
 
     // Put all of the core loads into a vector
     for one_stat in stats_set.iter(){
+
         let stat_0_to_9: usize = ((one_stat * (symbols.len() as f32 - 1.0)) / 100.0) as usize;
+        println!("one stat: {} -> 0 to 9: {}  -> char: {} & color: {}",&one_stat,&stat_0_to_9,&symbols[stat_0_to_9],&colors[stat_0_to_9]);
         return_chart.push_str(format!("<span color='{}'>{}</span>",&colors[stat_0_to_9],&symbols[stat_0_to_9]).as_str());
     }
     //return_chart.push_str("</span>");
