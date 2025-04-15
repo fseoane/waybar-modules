@@ -6,7 +6,7 @@ use sysinfo::CpuRefreshKind;
 extern crate num_cpus;
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CHARS: &[&str]=  &["a","b","c","d","e","f","g","h","i","j"];
+const CHARS: &[&str]=  &[" ","b","c","d","e","f","g","h","i","j"];
 //const CHARS: &[&str]=  &[" ","▁","▂","▃","▄","▅","▆","▇","█","█"];   // with mono nerd fonts
 
 fn display_help() {
@@ -165,7 +165,7 @@ fn main() {
     }
 
 
-    let mut stats: Vec<f32> = vec![99.0; history];
+    let mut stats: Vec<f32> = vec![0.0; history];
     // let mut i:f32 =100.0;
     // for ref mut itm in stats.iter(){
     //     *itm = &i.clone();
