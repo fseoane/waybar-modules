@@ -4,7 +4,7 @@ use std::{thread, time::Duration};
 
 const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
 const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#87f0ad","#67f09d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
-const CHARSUP: &[&str]=   &["a","b","c","d","e","f","g","h","i","j"];             // font efe-graph.ttf
+const CHARSUP: &[&str]=   &[" ","b","c","d","e","f","g","h","i","j"];             // font efe-graph.ttf
 const CHARSDOWN: &[&str]= &["k","l","m","n","o","p","q","r","s","t"];       // font efe-graph.ttf
 
 fn display_help() {
@@ -28,16 +28,18 @@ fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value
     let mut return_chart: String = String::from("");
 
     // Put all of the core loads into a vector
-    for one_stat in up_stats_set.iter(){
-        let stat_0_to_9: usize = ((((one_stat * 100)/max_value) * (up_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
+    for one_stat_up in up_stats_set.iter(){
+        //let stat_0_to_9: usize = ((((one_stat * 100)/max_value) * (up_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
+        let stat_0_to_9: usize = (((one_stat_up * 100)/max_value)  / up_symbols.len() as f32).round() as usize;
         return_chart.push_str(format!("<span color='{}'>{}</span>",&up_colors[stat_0_to_9],&up_symbols[stat_0_to_9]).as_str());
     }
 
     return_chart.push_str("\\r");
 
     // Put all of the core loads into a vector
-    for one_stat in down_stats_set.iter(){
-        let stat_0_to_9: usize = ((((one_stat * 100)/max_value) * (up_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
+    for one_stat_down in down_stats_set.iter(){
+        //let stat_0_to_9: usize = ((((one_stat * 100)/max_value) * (down_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
+        let stat_0_to_9: usize = (((oneone_stat_down_stat * 100)/max_value)  / down_symbols.len() as f32).round() as usize;
         return_chart.push_str(format!("<span color='{}'>{}</span>",&down_colors[stat_0_to_9],&down_symbols[stat_0_to_9]).as_str());
     }
 

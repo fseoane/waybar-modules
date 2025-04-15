@@ -3,7 +3,7 @@ use std::env;
 use std::{thread, time::Duration};
 
 const COLORS:&[&str] = &["#96faf7","#66f1d7","#67f08d","#85f066","#f0ea66","#f0b166","#f09466","#f28888","#f37777","#f85555"];
-const CHARS: &[&str]=  &["a","b","c","d","e","f","g","h","i","j"];
+const CHARS: &[&str]=  &[" ","b","c","d","e","f","g","h","i","j"];
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -31,7 +31,8 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
 
     // Put all of the core loads into a vector
     for one_stat in stats_set.iter(){
-        let stat_0_to_9: usize = ((one_stat * (symbols.len() as f32 - 1.0)) / 100.0) as usize;
+        //let stat_0_to_9: usize = ((one_stat * (symbols.len() as f32 - 1.0)) / 100.0) as usize;
+        let stat_0_to_9: usize = (one_stat  / symbols.len() as f32).round() as usize;
         return_chart.push_str(format!("<span color='{}'>{}</span>",&colors[stat_0_to_9],&symbols[stat_0_to_9]).as_str());
     }
     //return_chart.push_str("</span>");
