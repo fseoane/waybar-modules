@@ -29,8 +29,8 @@ fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value
 
     // Put all of the core loads into a vector
     for one_stat_up in up_stats_set.iter(){
-        //let stat_0_to_9: usize = ((((one_stat * 100)/max_value) * (up_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
-        let stat_0_to_9: usize = (((one_stat_up * 100)/max_value)  / (up_symbols.len() as u64)) as usize;
+        let stat_0_to_9: usize = ((((one_stat_up * 100)/max_value) * (up_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
+        //let stat_0_to_9: usize = (((one_stat_up * 100)/max_value)  / (up_symbols.len() as u64)) as usize;
         return_chart.push_str(format!("<span color='{}'>{}</span>",&up_colors[stat_0_to_9],&up_symbols[stat_0_to_9]).as_str());
     }
 
@@ -38,8 +38,8 @@ fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value
 
     // Put all of the core loads into a vector
     for one_stat_down in down_stats_set.iter(){
-        //let stat_0_to_9: usize = ((((one_stat * 100)/max_value) * (down_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
-        let stat_0_to_9: usize = (((one_stat_down * 100)/max_value)  / (down_symbols.len() as u64)) as usize;
+        let stat_0_to_9: usize = ((((one_stat_down * 100)/max_value) * (down_symbols.len() as u64 - 1 as u64)) / 100 as u64) as usize;
+        //let stat_0_to_9: usize = (((one_stat_down * 100)/max_value)  / (down_symbols.len() as u64)) as usize;
         return_chart.push_str(format!("<span color='{}'>{}</span>",&down_colors[stat_0_to_9],&down_symbols[stat_0_to_9]).as_str());
     }
 
