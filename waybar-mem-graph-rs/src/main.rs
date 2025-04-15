@@ -21,7 +21,8 @@ fn display_help() {
 // Get the  chart
 fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> String {
 
-    let mut return_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
+    //let mut return_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
+    let mut return_chart: String = String::from("");
     let _chart_avg_percent: f32 = stats_set.iter().copied().sum::<f32>() / stats_set.len() as f32;
 
     // Put all of the core loads into a vector
@@ -29,7 +30,7 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
         let stat_0_to_9: usize = ((one_stat * (symbols.len() as f32 - 1.0)) / 100.0) as usize;
         return_chart.push_str(format!("<span color='{}'>{}</span>",&colors[stat_0_to_9],&symbols[stat_0_to_9]).as_str());
     }
-    return_chart.push_str("</span>");
+    //return_chart.push_str("</span>");
     return_chart
 }
 

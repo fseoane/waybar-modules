@@ -24,7 +24,8 @@ fn display_help() {
 // Get the  double chart with metrics un the upper middle annd metrics on bottom middle
 fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value: &u64, up_symbols:&[&str], down_symbols:&[&str],up_colors:&[&str] ,down_colors:&[&str] ) -> String {
 
-    let mut return_chart: String = String::from("<span font-family='efe-graph-bold' rise='-4444'>");
+    //let mut return_chart: String = String::from("<span font-family='efe-graph-bold' rise='-4444'>");
+    let mut return_chart: String = String::from("");
 
     // Put all of the core loads into a vector
     for one_stat in up_stats_set.iter(){
@@ -40,7 +41,7 @@ fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value
         return_chart.push_str(format!("<span color='{}'>{}</span>",&down_colors[stat_0_to_9],&down_symbols[stat_0_to_9]).as_str());
     }
 
-    return_chart.push_str("</span>");
+    //return_chart.push_str("</span>");
     return_chart
 }
 
