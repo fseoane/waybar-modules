@@ -98,7 +98,8 @@ fn get_cpu_usage_from_proc() -> f32 {
     let iowait = iowait2-iowait1;
 
     //let cpu_usage: f32 = 0.5 + 100.0 * ((user + system + niced + iowait) as f32) / ((user + system + idle + niced + iowait) as f32);
-    let cpu_usage: f32 = 0.5 + 100.0 * ((user + system + iowait) as f32) / ((user + system + idle + iowait) as f32);
+    //let cpu_usage: f32 = (100.0 * ((user + system + iowait) as f32)) / ((user + system + idle + iowait) as f32);
+    let cpu_usage: f32 = (100.0 * ((user + system ) as f32)) / ((user + system + idle) as f32);
     return cpu_usage;
 
 }
