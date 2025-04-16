@@ -4,7 +4,7 @@ use std::{thread, time::Duration};
 
 const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
 const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#87f0ad","#67f09d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
-const CHARSUP: &[&str]=   &["a","b","c","d","e","f","g","h","i","j"];             // font efe-graph.ttf
+const CHARSUP: &[&str]=   &["0","b","c","d","e","f","g","h","i","j"];             // font efe-graph.ttf
 const CHARSDOWN: &[&str]= &["k","l","m","n","o","p","q","r","s","t"];       // font efe-graph.ttf
 
 fn display_help() {
