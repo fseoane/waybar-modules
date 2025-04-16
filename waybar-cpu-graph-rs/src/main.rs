@@ -83,8 +83,8 @@ fn get_cpu_usage_from_proc() -> f32 {
     let system2: i32 = stdout2_vec[3].parse().unwrap();
     let idle1: i32 = stdout1_vec[4].parse().unwrap();
     let idle2: i32 = stdout2_vec[4].parse().unwrap();
-    let iowait1: i32 = stdout1_vec[5].parse().unwrap();
-    let iowait2: i32 = stdout2_vec[5].parse().unwrap();
+    //let iowait1: i32 = stdout1_vec[5].parse().unwrap();
+    //let iowait2: i32 = stdout2_vec[5].parse().unwrap();
 
     // println!("user1 {} user2 {}", &user1,&user2);
     // println!("system1 {} system2 {}", &system1,&system2);
@@ -95,7 +95,7 @@ fn get_cpu_usage_from_proc() -> f32 {
     //let niced = niced2-niced1;
     let system = system2-system1;
     let idle = idle2-idle1;
-    let iowait = iowait2-iowait1;
+    //let iowait = iowait2-iowait1;
 
     //let cpu_usage: f32 = 0.5 + 100.0 * ((user + system + niced + iowait) as f32) / ((user + system + idle + niced + iowait) as f32);
     //let cpu_usage: f32 = (100.0 * ((user + system + iowait) as f32)) / ((user + system + idle + iowait) as f32);

@@ -92,9 +92,8 @@ fn main() -> Result<(), Error> {
 
 
     loop {
-        if iter >= update_on_iter {
+        if iter % update_on_iter == 0 {
             sync_database();
-            iter = 0;
         }
         let mut longest_line:usize = 0;
         let (updates, mut stdout) = get_updates();
