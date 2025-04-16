@@ -218,7 +218,6 @@ fn main() {
             } else {
                 max =  highest;
             }
-
         }
 
         let up_stats_tot: u64 = up_stats.iter().sum();
