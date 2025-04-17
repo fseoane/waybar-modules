@@ -9,7 +9,7 @@ fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
     println!();
     println!("Options:");
-    println!("  --interval <seconds>   Set the interval seconds between updates (default: 900)");
+    println!("  --interval <seconds>   Set the interval seconds between updates get refreshed from internet (default: 900)");
     println!();
 }
 
@@ -63,8 +63,7 @@ fn get_aur_updates() -> (u16, String) {
 
 fn main() -> Result<(), Error> {
 
-
-    let mut interval: u32 = 900;  // by default every 900 seconds (15 minutes)
+    let mut interval: u32 = 300;  // by default every 900 seconds (15 minutes)
     let mut columns:usize = 1;
 
     let args: Vec<String> = env::args().collect();
@@ -81,18 +80,20 @@ fn main() -> Result<(), Error> {
         }
     }
 
-    let sleep_duration: Duration = Duration::from_secs(interval as u64);
+    let sleep_duration: Duration = Duration::from_secs(1);
 
     if interval == 0 {
         panic!("interval must be greater than 0");
     }
 
-    let update_on_iter =  2;  // every two iteractions, we'll refresh package updates database fron internet repos
-    let mut iter: u32 = 0;
-
+    let mut iter: u32 = interval;
 
     loop {
+<<<<<<< HEAD
         if iter % update_on_iter == 0 {
+=======
+        if iter % interval == 0 {
+>>>>>>> 62fd8a0 (Refactor interval handling and update help message for clarity)
             sync_database();
         }
         let mut longest_line:usize = 0;
@@ -149,8 +150,6 @@ fn main() -> Result<(), Error> {
                 }
                 iterlines+= 1;
             };
-
-
         }
 
         if aur_updates > 0 {
@@ -193,7 +192,6 @@ fn main() -> Result<(), Error> {
                     iterlines+= 1;
                 }
             };
-
         }
 
         if updates > 0 || aur_updates > 0 {
