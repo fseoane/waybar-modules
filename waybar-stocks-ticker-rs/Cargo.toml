@@ -1,0 +1,15 @@
+[package]
+name = "stocks-ticker-rs"
+version = "0.1.0"
+edition = "2021"
+
+[profile.release]
+strip = true  # Automatically strip symbols from the binary.
+lto = true
+codegen-units = 1
+
+[dependencies]
+log = "0.4.27"
+simplelog = "0.12.2"
+reqwest = { version = "0.11", features = ["blocking"] }
+regex = "1.11.1"
