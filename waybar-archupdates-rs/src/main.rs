@@ -89,12 +89,9 @@ fn main() -> Result<(), Error> {
     let mut iter: u32 = interval;
 
     loop {
-<<<<<<< HEAD
         if iter % update_on_iter == 0 {
-=======
-        if iter % interval == 0 {
->>>>>>> 62fd8a0 (Refactor interval handling and update help message for clarity)
             sync_database();
+            iter = 0;
         }
         let mut longest_line:usize = 0;
         let (updates, mut stdout) = get_updates();
