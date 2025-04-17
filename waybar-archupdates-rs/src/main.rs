@@ -89,7 +89,7 @@ fn main() -> Result<(), Error> {
     let mut iter: u32 = interval;
 
     loop {
-        if iter % update_on_iter == 0 {
+        if iter % interval == 0 {
             sync_database();
             iter = 0;
         }
