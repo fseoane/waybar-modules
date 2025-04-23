@@ -130,6 +130,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "diskspace-graph-rs"
+version = "0.1.0"
+dependencies = [
+ "sysinfo",
+]
+
+[[package]]
+name = "diskusage-graph-rs"
+version = "0.1.0"
+dependencies = [
+ "sysinfo",
+]
+
+[[package]]
 name = "displaydoc"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"

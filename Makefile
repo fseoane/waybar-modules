@@ -13,6 +13,12 @@ all:
 	rm -f ~/dot.files/.config/waybar/scripts/memgraph/memgraph-rs
 	cp target/release/memgraph-rs ~/dot.files/.config/waybar/scripts/memgraph/
 
+	rm -f ~/dot.files/.config/waybar/scripts/diskgraph/diskspace-graph-rs
+	cp target/release/diskspace-graph-rs ~/dot.files/.config/waybar/scripts/diskgraph/
+
+	rm -f ~/dot.files/.config/waybar/scripts/diskgraph/diskusage-graph-rs
+	cp target/release/diskusage-graph-rs ~/dot.files/.config/waybar/scripts/diskgraph/
+
 	rm -f ~/dot.files/.config/waybar/scripts/netgraph/netgraph-rs
 	cp target/release/netgraph-rs ~/dot.files/.config/waybar/scripts/netgraph/
 

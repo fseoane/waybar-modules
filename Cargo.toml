@@ -2,6 +2,8 @@
 resolver = "2"
 members = [
     "waybar-cpu-graph-rs",
+    "waybar-disk-space-rs",
+    "waybar-disk-usage-rs",
     "waybar-mem-graph-rs",
     "waybar-net-graph-rs",
     "waybar-temp-graph-rs",
