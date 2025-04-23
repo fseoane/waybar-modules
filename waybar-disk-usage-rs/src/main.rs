@@ -156,8 +156,9 @@ fn main() {
 
         let disk_usage_chart = get_double_chart(&read_stats,&write_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} MBps\\rWrite     : {} MBps\\rRange     : 0-{} MBps\\rAvg.Read  : {} MBps\\rAvg.Write : {} MBps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
-        thread::sleep(sleep_duration);
         current_sys.refresh_all();
+        thread::sleep(sleep_duration);
+
     }
 
 }
