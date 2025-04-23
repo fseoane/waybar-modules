@@ -138,7 +138,7 @@ fn main() {
         if max_write_stats > highest{
             highest = max_write_stats;
         }
-        let limits = vec![5,15,30,50,75,100,150,1000,2000,3000,6000,10000,20000];
+        let limits = vec![5,15,30,50,75,100,150,300,500,750,1000,2000,3000,6000,10000,20000];
         let mut max = 0;
         for limit in limits{
             if highest % limit == highest {
