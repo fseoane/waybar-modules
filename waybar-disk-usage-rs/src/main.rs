@@ -1,6 +1,7 @@
 
 use std::env;
 use std::{thread, time::Duration};
+use sysinfo::{ProcessesToUpdate,ProcessRefreshKind};
 
 //const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
 //const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#87f0ad","#67f09d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
@@ -51,7 +52,8 @@ fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value
 // Get the total network (down) usage
 fn get_disks_read_and_writen_bytes( req_sys: &sysinfo::System,
                                     polling_secs: &i32) -> (u64,u64){
-    // Get the total bytes recieved by every network interface
+
+
     let mut read_bytes: u64 = 0;
     let mut written_bytes: u64 = 0;
 
@@ -109,8 +111,8 @@ fn main() {
     loop {
         let stats = get_disks_read_and_writen_bytes(&current_sys,&interval);
         let mut highest: u64 = 1;
-        // println!("read    MBps {}",&stats.0);
-        // println!("written MBps {}",&stats.1);
+        println!("read    MBps {}",&stats.0);
+        println!("written MBps {}",&stats.1);
 
         if read_stats.len() == history as usize{
             read_stats.remove(0);
@@ -146,7 +148,7 @@ fn main() {
                 max =  highest;
             }
         }
-        // println!("max  MBps {}",&max);
+        println!("max  MBps {}",&max);
 
         let read_stats_tot: u64 = read_stats.iter().sum();
         let read_stats_avg: u64 = (read_stats_tot / read_stats.len() as u64) as u64;
@@ -156,7 +158,8 @@ fn main() {
 
         let disk_usage_chart = get_double_chart(&read_stats,&write_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} MBps\\rWrite     : {} MBps\\rRange     : 0-{} MBps\\rAvg.Read  : {} MBps\\rAvg.Write : {} MBps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
-        current_sys.refresh_all();
+
+        current_sys.refresh_processes_specifics(ProcessesToUpdate::All,true,ProcessRefreshKind::nothing().with_disk_usage()); //.refresh_all();
         thread::sleep(sleep_duration);
 
     }
