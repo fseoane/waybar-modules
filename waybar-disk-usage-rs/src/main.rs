@@ -1,11 +1,12 @@
 
 use std::env;
 use std::{thread, time::Duration};
-use sysinfo::System;
 
-const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
-const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#87f0ad","#67f09d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
-const CHARSUP: &[&str]=   &["0","b","c","d","e","f","g","h","i","j"];             // font efe-graph.ttf
+//const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
+// const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#87f0ad","#67f09d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
+const COLORSUP:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#87f0ad","#67f09d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
+const COLORSDOWN:&[&str] =&["##53EDE8","#53E3ED","#53CCED","#53BAED","#53A8ED","#539BED","#538BED","#536FED","#535BED","#6553ED"];
+const CHARSUP: &[&str]=   &["0","b","c","d","e","f","g","h","i","j"];       // font efe-graph.ttf
 const CHARSDOWN: &[&str]= &["k","l","m","n","o","p","q","r","s","t"];       // font efe-graph.ttf
 
 fn display_help() {
@@ -14,8 +15,6 @@ fn display_help() {
     println!("Options:");
     println!("  --interval <seconds>        Set the interval between updates (default: 1)");
     println!("  --history <number>          Set the number of reading to show in the graph (default: 15)");
-    println!("  --interface <net_interface> Set the network interface to monitor (default: eth0)");
-    println!("                              or 'total' to monitor all interfaces.");
     println!();
 }
 
@@ -57,11 +56,13 @@ fn get_disks_read_and_writen_bytes( req_sys: &sysinfo::System,
     let mut read_bytes: u64 = 0;
     let mut written_bytes: u64 = 0;
 
-    for (pid, process) in req_sys.processes() {
+    for (_pid, process) in req_sys.processes() {
         let disk_usage = process.disk_usage();
         read_bytes = (disk_usage.read_bytes / *polling_secs as u64) as u64;
         written_bytes = (disk_usage.written_bytes/ *polling_secs as u64) as u64;
     }
+    println!("read bytes    {}",&read_bytes);
+    println!("written bytes {}",&written_bytes);
 
     return (read_bytes,written_bytes);
 }
@@ -131,7 +132,7 @@ fn main() {
         if max_write_stats > highest{
             highest = max_write_stats;
         }
-        let limits = vec![15,30,60,120,300,500,750,1000];
+        let limits = vec![15,60,150,1500,6000,12000,30000,50000,75000,100000];
         let mut max = 0;
         for limit in limits{
             if highest % limit == highest {
@@ -146,10 +147,10 @@ fn main() {
         let read_stats_avg: u64 = (read_stats_tot / read_stats.len() as u64) as u64;
         let write_stats_tot: u64 = write_stats.iter().sum();
         let write_stats_avg: u64 = (write_stats_tot / write_stats.len() as u64) as u64;
-        let sum_stats_avg: u64 = ((read_stats_avg + write_stats_avg) / 2)  ;
+        let sum_stats_avg: u64 = (read_stats_avg + write_stats_avg) / 2  ;
 
         let disk_usage_chart = get_double_chart(&read_stats,&write_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} Bps\\rWrite     : {} Bps\\rRange     : 0-{} KBps\\rAvg.Read  : {} Bps\\rAvg.Write : {} Bps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} Bps\\rWrite     : {} Bps\\rRange     : 0-{} Bps\\rAvg.Read  : {} Bps\\rAvg.Write : {} Bps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
         thread::sleep(sleep_duration);
         current_sys.refresh_all();
     }
