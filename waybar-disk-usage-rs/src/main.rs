@@ -111,7 +111,7 @@ fn main() {
     loop {
         let stats = get_disks_read_and_writen_bytes(&current_sys,&interval);
         let mut highest: u64 = 1;
-        println!("read MBps    {}",&stats.0);
+        println!("read    MBps {}",&stats.0);
         println!("written MBps {}",&stats.1);
 
         if read_stats.len() == history as usize{
@@ -138,7 +138,7 @@ fn main() {
         if max_write_stats > highest{
             highest = max_write_stats;
         }
-        let limits = vec![15,60,150,1500,3000,6000];
+        let limits = vec![5,15,60,150,1500,3000,6000,10000,20000];
         let mut max = 0;
         for limit in limits{
             if highest % limit == highest {
@@ -148,6 +148,7 @@ fn main() {
                 max =  highest;
             }
         }
+        println!("max  MBps {}",&max);
 
         let read_stats_tot: u64 = read_stats.iter().sum();
         let read_stats_avg: u64 = (read_stats_tot / read_stats.len() as u64) as u64;
