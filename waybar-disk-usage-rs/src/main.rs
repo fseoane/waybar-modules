@@ -58,13 +58,17 @@ fn get_disks_read_and_writen_bytes( req_sys: &sysinfo::System,
 
     for (_pid, process) in req_sys.processes() {
         let disk_usage = process.disk_usage();
-        read_bytes = (disk_usage.read_bytes / *polling_secs as u64) as u64;
-        written_bytes = (disk_usage.written_bytes/ *polling_secs as u64) as u64;
+        read_bytes += disk_usage.read_bytes;
+        written_bytes += disk_usage.written_bytes;
+        // println!("read bytes    {}",&read_bytes);
+        // println!("written bytes {}",&written_bytes);
     }
-    println!("read bytes    {}",&read_bytes);
-    println!("written bytes {}",&written_bytes);
+    read_bytes = (read_bytes / *polling_secs as u64) as u64;
+    written_bytes = (written_bytes / *polling_secs as u64) as u64;
+    // println!("read bytes    {}",&read_bytes);
+    // println!("written bytes {}",&written_bytes);
 
-    return (read_bytes,written_bytes);
+    return ((read_bytes/1000000),(written_bytes/1000000));
 }
 
 
@@ -107,6 +111,8 @@ fn main() {
     loop {
         let stats = get_disks_read_and_writen_bytes(&current_sys,&interval);
         let mut highest: u64 = 1;
+        println!("read MBps    {}",&stats.0);
+        println!("written MBps {}",&stats.1);
 
         if read_stats.len() == history as usize{
             read_stats.remove(0);
@@ -132,7 +138,7 @@ fn main() {
         if max_write_stats > highest{
             highest = max_write_stats;
         }
-        let limits = vec![15,60,150,1500,6000,12000,30000,50000,75000,100000];
+        let limits = vec![15,60,150,1500,3000,6000];
         let mut max = 0;
         for limit in limits{
             if highest % limit == highest {
@@ -150,7 +156,7 @@ fn main() {
         let sum_stats_avg: u64 = (read_stats_avg + write_stats_avg) / 2  ;
 
         let disk_usage_chart = get_double_chart(&read_stats,&write_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} Bps\\rWrite     : {} Bps\\rRange     : 0-{} Bps\\rAvg.Read  : {} Bps\\rAvg.Write : {} Bps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} MBps\\rWrite     : {} MBps\\rRange     : 0-{} MBps\\rAvg.Read  : {} MBps\\rAvg.Write : {} MBps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
         thread::sleep(sleep_duration);
         current_sys.refresh_all();
     }
