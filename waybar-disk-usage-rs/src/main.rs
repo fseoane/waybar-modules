@@ -43,7 +43,6 @@ fn get_double_chart(up_stats_set: &Vec<u64>,down_stats_set: &Vec<u64>, max_value
         return_chart.push_str(format!("<span color='{}'>{}</span>",&down_colors[stat_0_to_9],&down_symbols[stat_0_to_9]).as_str());
     }
 
-    //return_chart.push_str("</span>");
     return_chart
 }
 
@@ -65,8 +64,7 @@ fn get_disks_read_and_writen_bytes( req_sys: &sysinfo::System,
     }
     read_bytes = (read_bytes / *polling_secs as u64) as u64;
     written_bytes = (written_bytes / *polling_secs as u64) as u64;
-    println!("read bytes    {}",&read_bytes/1000000);
-    println!("written bytes {}",&written_bytes/1000000);
+
 
     return ((read_bytes/1000000),(written_bytes/1000000));
 }
@@ -111,8 +109,8 @@ fn main() {
     loop {
         let stats = get_disks_read_and_writen_bytes(&current_sys,&interval);
         let mut highest: u64 = 1;
-        println!("read    MBps {}",&stats.0);
-        println!("written MBps {}",&stats.1);
+        // println!("read    MBps {}",&stats.0);
+        // println!("written MBps {}",&stats.1);
 
         if read_stats.len() == history as usize{
             read_stats.remove(0);
@@ -148,7 +146,7 @@ fn main() {
                 max =  highest;
             }
         }
-        println!("max  MBps {}",&max);
+        // println!("max  MBps {}",&max);
 
         let read_stats_tot: u64 = read_stats.iter().sum();
         let read_stats_avg: u64 = (read_stats_tot / read_stats.len() as u64) as u64;
