@@ -149,7 +149,7 @@ fn main() {
         let sum_stats_avg: u64 = ((read_stats_avg + write_stats_avg) / 2)  ;
 
         let disk_usage_chart = get_double_chart(&read_stats,&write_stats,&max,CHARSUP,CHARSDOWN,COLORSUP,COLORSDOWN);
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} Bps\\rWrite     : {} Bps\\rRange     : 0-{} KBps\\rAvg.Read  : {} Bps\\rAvg.Write: {} Bps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\":\"\",\"alt\":\"Read      : {} Bps\\rWrite     : {} Bps\\rRange     : 0-{} KBps\\rAvg.Read  : {} Bps\\rAvg.Write : {} Bps\",\"percentage\":{}}}",&disk_usage_chart,&disk_usage_chart,read_stats[read_stats.len()-1] as u64,write_stats[write_stats.len()-1] as u64,&max,&read_stats_avg,&write_stats_avg,&sum_stats_avg);
         thread::sleep(sleep_duration);
         current_sys.refresh_all();
     }
