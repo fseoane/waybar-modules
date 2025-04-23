@@ -3,12 +3,37 @@ use std::env;
 use std::{thread, time::Duration};
 use sysinfo::{ProcessesToUpdate,ProcessRefreshKind};
 
-//const COLORSUP:&[&str] =  &["#f299b9","#f288a9","#f29988","#f38877","#f37777","#f36677","#f35577","#f35566","#f74433","#f70011"];
+
 //const COLORSDOWN:&[&str] =&["#97f0cd","#87f0bd","#77f0ad","#87f0ad","#67f09d","#47f08d","#37f08d","#27f08d","#17f08d","#07f08d"];
-const COLORSUP:&[&str] =  &["#53EDE8","#53E3ED","#53CCED","#53BAED","#53A8ED","#539BED","#538BED","#536FED","#535BED","#6553ED"];
+const COLORSUP:&[&str] =  &["#53EDE8","#53E3ED","#53CCED","#53BAED","#53A8ED","#539BED","#538BED","#535BED","#6553ED","#536FED"];
 const COLORSDOWN:&[&str] =&["#E7BBF0","#F0B6F2","#F099ED","#F07FD9","#EB71BE","#EB609E","#ED5C92","#ED5379","#ED405A","#ED0C10"];
 const CHARSUP: &[&str]=   &["0","b","c","d","e","f","g","h","i","j"];       // font efe-graph.ttf
 const CHARSDOWN: &[&str]= &["k","l","m","n","o","p","q","r","s","t"];       // font efe-graph.ttf
+
+
+// Light Blue
+// #ADD8E6
+// Light Sky Blue
+// #87CEEB
+// Sky Blue
+// #87CEFF
+// Powder Blue
+// #B0E0E6
+// Cadet Blue
+// #5F9EA0
+// Steel Blue
+// #4682B4
+// Medium Blue
+// #0000CD
+// Blue
+// #0000FF
+// Navy
+// #000080
+// Dark Blue
+// #00008B
+
+
+// #FFFFFF, #E6F9FF, #B3E2FF, #80D6FF, #4DB3FF, #29A0FF, #0070FF, #0054CC, #003399, and #000099
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
