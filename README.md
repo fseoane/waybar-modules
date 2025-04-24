@@ -15,6 +15,9 @@ Those modules are:
 * network usage graph
 
   ![1744548996563](images/README/1744548996563.png)
+* disk space usage graph
+* disk IO usage grapp
+* temperature graph
 * updates (for Arch linux with both pacman and aur updates)
 
   ![1744548548826](images/README/1744548548826.png)
