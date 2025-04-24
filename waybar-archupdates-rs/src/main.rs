@@ -1,5 +1,4 @@
 use std::env;
-use std::io::Error;
 use std::process::Command;
 use std::{thread, time::Duration};
 
@@ -10,6 +9,7 @@ fn display_help() {
     println!();
     println!("Options:");
     println!("  --interval <seconds>   Set the interval seconds between updates get refreshed from internet (default: 900)");
+    println!("                         If <seconds> is 0 this process will execute once and then exit.");
     println!();
 }
 
@@ -61,7 +61,7 @@ fn get_aur_updates() -> (u16, String) {
     }
 }
 
-fn main() -> Result<(), Error> {
+fn main() {
 
     let mut interval: u32 = 300;  // by default every 900 seconds (15 minutes)
     let mut columns:usize = 1;
@@ -71,25 +71,26 @@ fn main() -> Result<(), Error> {
         for (i, arg) in args.iter().enumerate() {
             if arg == "--help" {
                 display_help();
-                return Ok(());
             } else if arg == "--interval" && i + 1 < args.len() {
                 interval = args[i + 1].parse().unwrap_or_else(|_| {
-                    panic!("--interval must be greater than 0!")
+                    panic!("--interval must be greater or equal to 0!")
                 });
             }
         }
     }
 
-    let sleep_duration: Duration = Duration::from_secs(1);
-
-    if interval == 0 {
-        panic!("interval must be greater than 0");
-    }
+    let sleep_duration: Duration = Duration::from_secs(interval as u64);
 
     let mut iter: u32 = interval;
 
     loop {
-        if iter % interval == 0 {
+        if interval > 0 {
+            if iter % interval == 0 {
+                sync_database();
+                iter = 0;
+            }
+        }
+        else {
             sync_database();
             iter = 0;
         }
@@ -118,8 +119,6 @@ fn main() -> Result<(), Error> {
                     padding[index % 4] = padding[index % 4].max(word.len())
                 });
 
-
-
             stdout = format!(
                 "{}",
                 stdout
@@ -135,7 +134,7 @@ fn main() -> Result<(), Error> {
                     .collect::<Vec<String>>()
                     .join("\n")
             );
-            let mut iterlines=0;
+            let mut iterlines = 0;
             for line in stdout.lines(){
                 if iterlines % columns < (columns-1){
                     text_stdout = text_stdout + line + "\t | ";
@@ -145,7 +144,7 @@ fn main() -> Result<(), Error> {
                 if line.len()>longest_line{
                     longest_line=line.len()  + ( 3* (columns-1));
                 }
-                iterlines+= 1;
+                iterlines += 1;
             };
         }
 
@@ -172,10 +171,10 @@ fn main() -> Result<(), Error> {
                     .collect::<Vec<String>>()
                     .join("\n")
             );
-            let mut iterlines=0;
+            let mut iterlines = 0;
             for line in aur_stdout.lines(){
                 if stdout.contains(line) {
-                    aur_updates= aur_updates - 1;
+                    aur_updates = aur_updates - 1;
                 }
                 else {
                     if iterlines % columns < (columns-1){
@@ -186,18 +185,18 @@ fn main() -> Result<(), Error> {
                     if line.len()>longest_line{
                         longest_line=line.len() + ( 3* (columns-1));
                     }
-                    iterlines+= 1;
+                    iterlines += 1;
                 }
             };
         }
 
         if updates > 0 || aur_updates > 0 {
             let mut tooltip = String::from("");
-            if updates >0 {
+            if updates > 0 {
                 tooltip = format!("PACMAN ({})\\n{} \\n{}\\n",&updates,"¯".repeat(columns * longest_line),text_stdout.trim_end().replace("\"", "\\\"").replace("\n", "\\n").replace("\t", "\\t"));
             }
 
-            if aur_updates >0 {
+            if aur_updates > 0 {
                 tooltip = format!("{}\\nAUR ({}) \\n{}\\n{}\\n",tooltip,&aur_updates,"¯".repeat(columns * longest_line),text_aur_stdout.trim_end().replace("\"", "\\\"").replace("\n", "\\n").replace("\t", "\\t"));
             }
 
@@ -207,7 +206,9 @@ fn main() -> Result<(), Error> {
         } else {
             println!("{{\"text\":\"\",tooltip\":\"\",\"class\":\"\",\"alt\":\"\"}}");
         }
+
         iter += 1;
+        if interval == 0 { break;}
         thread::sleep(sleep_duration);
     }
 }
