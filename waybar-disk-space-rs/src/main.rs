@@ -18,7 +18,6 @@ fn display_help() {
 
 // -------------------------------------------------------------------------
 
-
 // Get the  chart
 fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> String {
 
@@ -39,30 +38,35 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
 
 // -------------------------------------------------------------------------
 
-
 // Get the average core usage
 fn get_disks_available_space(req_disks: &mut sysinfo::Disks) -> (f32,Vec<String>){
 
-    let mut disk_space_usage:Vec<String> = Vec::new();
-    let mut disk_tot: u64 = 0;
+    let mut disks_space_usage_stats:Vec<String> = Vec::new();
+    //let mut disk_avail: u64 = 0;
+    //let mut disk_used: u64 = 0;
+    let mut disk_count: i32 = 0;
+    let mut disk_overall_usage_avg: f32 = 0.0;
+
     for disk in req_disks.list() {
-        disk_space_usage.push(format!("{}-{}-{}",disk.name().to_string_lossy(),disk.available_space() as u64,disk.total_space() as u64));
-        disk_tot += disk.available_space()
+        let disk_kind = disk.kind();
+        if disk_kind == sysinfo::DiskKind::HDD || disk_kind == sysinfo::DiskKind::SSD {
+            disk_count += 1;
+            let disk_avail = disk.available_space();
+            let disk_total = disk.total_space();
+            let disk_used = disk_total - disk_avail;
+            let disk_usage: f32 = ((disk_used * 100) / disk_total) as f32;
+            disk_overall_usage_avg += disk_usage;
+            disks_space_usage_stats.push(format!("{} ({})|{}",disk.mount_point().to_string_lossy(),disk.name().to_string_lossy(),disk_usage.round()));
+        }
     }
 
-    let disk_avg: f32 = (disk_tot / req_disks.list().len() as u64) as f32;
-    // println!("--------------");
-    // //println!("cpu cores {}",cpus.len());
-    // println!("cpu cores {}",num_cpus::get());
-    // println!("cpu phi   {}",num_cpus::get_physical());
-    // println!("cpu avg   {}",cpu_avg);
+    disk_overall_usage_avg = disk_overall_usage_avg / disk_count as f32 ;
 
-    return (disk_avg,disk_space_usage);
+    return (disk_overall_usage_avg.round(),disks_space_usage_stats);
 
 }
 
 // -------------------------------------------------------------------------
-
 
 fn main() {
     let mut interval: u32 = 2;
@@ -78,9 +82,9 @@ fn main() {
                 interval = args[i + 1].parse().unwrap_or_else(|_| {
                     panic!("--interval must be greater than 0!")
                 });
-            } else if arg == "--disk" && i + 1 < args.len() {
+            } else if arg == "--history" && i + 1 < args.len() {
                 history = args[i + 1].parse().unwrap_or_else(|_| {
-                    panic!("--disk must contain a mount point!")
+                    panic!("--history must be greater than 0!")
                 });
             }
         }
@@ -121,12 +125,12 @@ fn main() {
         let mut disks_usage_tabulada = String::from("");
         for line in disks_usage.iter(){
             let linelen = line.len();
-            let tabbedline = line.replace("-"," ".repeat(disk_usage_item_maxlen-(linelen-1)).as_str());
+            let tabbedline = line.replace("|"," ".repeat(disk_usage_item_maxlen-(linelen-1)).as_str());
             disks_usage_tabulada.push_str(format!("{}%\\n",&tabbedline).as_str());
         }
 
         let disks_chart = get_single_chart(&stats,CHARS,COLORS) ;
-        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}%\\n--------------\\n{}\",\"percentage\":{}}}",&disks_chart,&disks_chart,&disk_avg,&disks_usage_tabulada,stats[stats.len()-1] as i32);
+        println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg. space used: {}%\\n--------------\\n{}\",\"percentage\":{}}}",&disks_chart,&disks_chart,&disk_avg,&disks_usage_tabulada,stats[stats.len()-1] as i32);
         thread::sleep(sleep_duration);
         current_disks.refresh(true);
         //current_sys.refresh_all();
