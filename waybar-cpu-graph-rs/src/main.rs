@@ -45,7 +45,6 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
 // not very efficient and may cause performance issues.
 // It is better to use the sysinfo crate to get the CPU usage, as it is
 // more efficient and accurate.
-// This function is only used as a workaround for the sysinfo crate.
 fn get_cpu_usage_from_proc() -> f32 {
     // checkupdates --nosync --nocolor
     let output1 = Command::new("head")
