@@ -24,7 +24,6 @@ fn display_help() {
 // Get the  chart
 fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> String {
 
-    //let mut return_chart: String = String::from("<span font-family='efe-graph' rise='-4444'>");
     let mut return_chart: String = String::from("");
     let _chart_avg_percent: f32 = stats_set.iter().copied().sum::<f32>() / stats_set.len() as f32;
 
@@ -32,16 +31,21 @@ fn get_single_chart(stats_set: &Vec<f32>, symbols:&[&str],colors:&[&str] ) -> St
     for one_stat in stats_set.iter(){
 
         let stat_0_to_9: usize = ((one_stat * (symbols.len() as f32 - 1.0)) / 100.0) as usize;
-        //let stat_0_to_9: usize = (one_stat  / symbols.len() as f32).round() as usize;
         return_chart.push_str(format!("<span color='{}'>{}</span>",&colors[stat_0_to_9],&symbols[stat_0_to_9]).as_str());
     }
-    //return_chart.push_str("</span>");
     return_chart
 }
 
 // -------------------------------------------------------------------------
-//  cpuUsage=$({ head -n1 /proc/stat;sleep 0.2;head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u;s=$4-s;i=$5-i;w=$6-w}END{print int(0.5+100*(u+s+w)/(u+s+i+w))}')
-// get updates info without network operations
+// get cpu usage from /proc/stat
+// This is a workaround to get the CPU usage, because sysinfo does not work
+// properly on some systems (e.g. Arch Linux)
+// This function is not very accurate, but it works for now.
+// It is not recommended to use this function in production code, as it is
+// not very efficient and may cause performance issues.
+// It is better to use the sysinfo crate to get the CPU usage, as it is
+// more efficient and accurate.
+// This function is only used as a workaround for the sysinfo crate.
 fn get_cpu_usage_from_proc() -> f32 {
     // checkupdates --nosync --nocolor
     let output1 = Command::new("head")
@@ -59,9 +63,6 @@ fn get_cpu_usage_from_proc() -> f32 {
         .expect("failed to execute process");
     let stdout2 = String::from_utf8_lossy(&output2.stdout).to_string();
     let stdout2_vec: Vec<String> = stdout2.split_whitespace().map(|s| s.to_string()).collect();
-
-    // println!("stdout1\n{} ", &stdout1);
-    // println!("stdout2\n{} ", &stdout2);
 
     // > cat /proc/stat
     //      cpu  2255 34 2290 22625563 6290 127 456
@@ -86,11 +87,6 @@ fn get_cpu_usage_from_proc() -> f32 {
     //let iowait1: i32 = stdout1_vec[5].parse().unwrap();
     //let iowait2: i32 = stdout2_vec[5].parse().unwrap();
 
-    // println!("user1 {} user2 {}", &user1,&user2);
-    // println!("system1 {} system2 {}", &system1,&system2);
-    // println!("idle1 {} idle2 {}", &idle1,&idle2);
-    // println!("wait1 {} wait2 {}", &iowait1,&iowait2);
-
     let user = user2-user1;
     //let niced = niced2-niced1;
     let system = system2-system1;
@@ -104,6 +100,8 @@ fn get_cpu_usage_from_proc() -> f32 {
 
 }
 
+// -------------------------------------------------------------------------
+
 // Get the average core usage
 fn get_cpu_use(req_sys: &mut sysinfo::System) -> (f32,Vec<String>){
 
@@ -113,32 +111,13 @@ fn get_cpu_use(req_sys: &mut sysinfo::System) -> (f32,Vec<String>){
     for core in req_sys.cpus() {
         cores_usage.push(format!("{}-{}",core.name(),core.cpu_usage() as i32));
     }
-    //let cpu_avg1: f32 = req_sys.global_cpu_usage();
 
     let cpu_avg: f32 = get_cpu_usage_from_proc();
 
-
-    // let mut cpus: Vec<f32> = Vec::new();
-    // for core in req_sys.cpus() {
-    //     cores_usage.push(format!("{}-{}",core.name(),core.cpu_usage() as i32));
-    //     cpus.push(core.cpu_usage());
-    // }
-
-    // // Get the average load
-    // let cpu_tot: f32 = cpus.iter().sum();
-    // let cpu_avg: f32 = cpu_tot / cpus.len() as f32;
-    // println!("--------------");
-    // //println!("cpu cores {}",cpus.len());
-    // println!("cpu cores {}",num_cpus::get());
-    // println!("cpu phi   {}",num_cpus::get_physical());
-    // println!("cpu avg   {}",cpu_avg);
-
     return (cpu_avg,cores_usage);
-
 }
 
 // -------------------------------------------------------------------------
-
 
 fn main() {
     let mut history = 15;
@@ -167,18 +146,12 @@ fn main() {
 
 
     let mut stats: Vec<f32> = vec![0.0; history];
-    // let mut i:f32 =100.0;
-    // for ref mut itm in stats.iter(){
-    //     *itm = &i.clone();
-    //     i = i - stats.len() as f32;
-    // }
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
     let mut current_sys = sysinfo::System::new_all();
     current_sys.refresh_cpu_specifics(CpuRefreshKind::nothing().with_cpu_usage());
-    //current_sys.refresh_all();
+
     loop {
-        // Call each function to get all the values we need
         let cpu_avg = get_cpu_use(&mut current_sys);
 
         if stats.len() == history{
@@ -207,7 +180,6 @@ fn main() {
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg.Usage: {}%\\n--------------\\n{}\",\"percentage\":{}}}",&cpu_chart,&cpu_chart,&stats_avg,&cores_usage_tabulada,stats[stats.len()-1] as i32);
         thread::sleep(sleep_duration);
         current_sys.refresh_cpu_usage();
-        //current_sys.refresh_all();
 
     }
 
