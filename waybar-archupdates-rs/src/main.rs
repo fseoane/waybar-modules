@@ -2,7 +2,7 @@ use std::env;
 use std::process::Command;
 use std::{thread, time::Duration};
 
-
+// --------------------------------------------------------------
 
 fn display_help() {
     println!("Usage: {} [options]", env::current_exe().unwrap().display());
@@ -13,6 +13,8 @@ fn display_help() {
     println!();
 }
 
+// --------------------------------------------------------------
+
 // check updates from network
 fn sync_database() {
     // checkupdates --nocolor
@@ -21,6 +23,8 @@ fn sync_database() {
         .output()
         .expect("failed to execute process");
 }
+
+// --------------------------------------------------------------
 
 // get updates info without network operations
 fn get_updates() -> (u16, String) {
@@ -41,8 +45,9 @@ fn get_updates() -> (u16, String) {
     }
 }
 
+// --------------------------------------------------------------
 
-// get updates info without network operations
+// get aur updates info without network operations
 fn get_aur_updates() -> (u16, String) {
     // checkupdates --nosync --nocolor
     let output = Command::new("checkupdates-with-aur")
@@ -60,6 +65,8 @@ fn get_aur_updates() -> (u16, String) {
         None => (0, "0".to_string()),
     }
 }
+
+// --------------------------------------------------------------
 
 fn main() {
 
@@ -130,7 +137,6 @@ fn main() {
                     .collect::<Vec<String>>()
                     .chunks(4)
                     .map(|line| line.join(" "))
-                    //.find_map(|(i,line)|(i % columns < (columns -1)).then_some(line.join("\t"))                     )
                     .collect::<Vec<String>>()
                     .join("\n")
             );
