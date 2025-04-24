@@ -96,8 +96,7 @@ fn main() {
                 sync_database();
                 iter = 0;
             }
-        }
-        else {
+        } else {
             sync_database();
             iter = 0;
         }
