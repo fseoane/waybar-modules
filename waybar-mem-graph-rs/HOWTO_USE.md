@@ -1,5 +1,6 @@
 MEMORY Usage graph module for Waybar
----------------------------------------------
+------------------------------------
+
 (https://github.com/fseoane/waybar-modules.git)
 
 Why not just get memory usage statistics in custom waybar module?
@@ -13,15 +14,18 @@ How to use
 
 2.-add to ~/.config/waybar/config
 
-"custom/mem_graph": {
-    "format": "{}|",
+```
+  "custom/memory_graph": {
+    "format": "<span font-family='efe-graph' rise='-4444'>{}</span>",
     "return-type": "json",
-    "exec": "$HOME/.config/waybar/scripts/memgraph/memgraph-rs --interval 2 --history 10",
+    "exec": "$HOME/.config/waybar/scripts/memgraph/memgraph-rs --interval 5 --history 8",
     "tooltip": true,
     "escape":false,
     "on-click": "flatpak run net.nokyan.Resources",
-    "tooltip-format": "<u>Memory</u>\r<span font='30' font-family='efe-graph'>{}</span>\nMEM Usage: {percentage}%\n{alt}"
-},
+    "tooltip-format": "<u>Memory</u>\r<span font='30' font-family='efe-graph'>{}</span>\nMEM Usage: {percentage}%\n{alt}",
+  },
+```
+
 * where cli options are
   * --interval - interval to gather the usage metrics.
   * --history  - number of usage metrics to show in the graph.
@@ -32,10 +36,12 @@ How to use
 
 5.- set your style in .config/waybar/style.css
 
+```
 #custom-mem_graph{
-    color: <your background color>;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    font-size: 18px;
-    text-shadow: none;
+color: your;
+margin: 0px 0px 0px 0px;
+padding: 0px 0px 0px 0px;
+font-size: 18px;
+text-shadow: none;
 }
+```

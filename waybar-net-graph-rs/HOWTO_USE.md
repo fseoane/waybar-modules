@@ -1,5 +1,6 @@
 NETWORK Usage graph module for Waybar
----------------------------------------------
+-------------------------------------
+
 (https://github.com/fseoane/waybar-modules.git)
 
 Why not just get network usage statistics in custom waybar module?
@@ -12,15 +13,18 @@ How to use
 
 2.-add to ~/.config/waybar/config
 
-    "custom/net_graph": {
-        "format": "{}|",
-        "return-type": "json",
-        "exec": "$HOME/.config/waybar/scripts/netgraph/netgraph-rs --interval 2 --history 10 --interface eth0",
-        "tooltip": true,
-        "escape":false,
-        "on-click": "/usr/bin/sniffnet",
-        "tooltip-format": "<u>Network</u>\r<span font='40' font-family='efe-graph'>{}</span>\n{alt}"
-    },
+```
+"custom/net_graph": {
+   "format": "{}",
+   "return-type": "json",
+   "exec": "$HOME/.config/waybar/scripts/netgraph/netgraph-rs --interval 2 --history 10",
+   "tooltip": true,
+   "escape":false,
+   "on-click": "/usr/bin/sniffnet",
+   "tooltip-format": "<u>Network</u>\r{}\n{alt}",
+},
+```
+
 * where cli options are
   * --interval - interval to gather the usage metrics.
   * --history  - number of usage metrics to show in the graph.
@@ -32,10 +36,10 @@ How to use
 
 5.- set your style in .config/waybar/style.css
 
-    #custom-net_graph{
-        color: <your background color>;
-        margin: 0px 0px 0px 0px;
-        padding: 0px 0px 0px 0px;
-        font-size: 18px;
-        text-shadow: none;
-    }
+#custom-net_graph{
+    color: <your background color>;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    font-size: 18px;
+    text-shadow: none;
+}

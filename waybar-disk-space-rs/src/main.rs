@@ -95,11 +95,7 @@ fn main() {
 
 
     let mut stats: Vec<f32> = vec![0.0; history];
-    // let mut i:f32 =100.0;
-    // for ref mut itm in stats.iter(){
-    //     *itm = &i.clone();
-    //     i = i - stats.len() as f32;
-    // }
+
 
     let sleep_duration: Duration = Duration::from_secs(interval as u64);
 
@@ -133,7 +129,6 @@ fn main() {
         println!("{{\"text\":\"{}\",\"tooltip\":\"{}\",\"class\": \"\",\"alt\":\"Avg. space used: {}%\\n--------------\\n{}\",\"percentage\":{}}}",&disks_chart,&disks_chart,&disk_avg,&disks_usage_tabulada,stats[stats.len()-1] as i32);
         thread::sleep(sleep_duration);
         current_disks.refresh(true);
-        //current_sys.refresh_all();
 
     }
 

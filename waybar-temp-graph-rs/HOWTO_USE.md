@@ -1,5 +1,6 @@
 TEMPERATURE Usage graph module for Waybar
----------------------------------------------
+-----------------------------------------
+
 (https://github.com/fseoane/waybar-modules.git)
 
 Why not just get temperature usage statistics in custom waybar module?
@@ -13,19 +14,21 @@ How to use
 
 2.-add to ~/.config/waybar/config
 
-      "custom/temp_graph": {
-          "format": "{}|",
-          "return-type": "json",
-          "exec": "$HOME/.config/waybar/scripts/tempgraph/tempgraph-rs --interval 2 --history 10",
-          "tooltip": true,
-          "escape":false,
-          "tooltip-format": "<u>Temperature</u>\r<span font='30' font-family='efe-graph'>{}</span>\nTemp Avg: {percentage}%\n{alt}"
-      },
+```
+"custom/temp_graph": {
+   "format": "{}",
+   "return-type": "json",
+   "exec": "$HOME/.config/waybar/scripts/tempgraph/tempgraph-rs --interval 5 --history 7 --item max",
+   "tooltip": true,
+   "escape":false,
+   "tooltip-format": "<u>Temperature (max)</u>\r{}\n{alt}",
+},
+```
 
 * where cli options are
   * --interval - interval to gather the usage metrics.
   * --history  - number of usage metrics to show in the graph.
-  * --item     - name of the temperature item/sensor to show in the graph. If not specified, it shows the average between all sensors found (if any)
+  * --item      - name of the temperature item/sensor to show in the graph. If not specified, it shows the average between all sensors found (if any)
 
 3.-add "custom/temp_graph" to one of modules-left, modules-center or modules-right
 
@@ -33,10 +36,10 @@ How to use
 
 5.- set your style in .config/waybar/style.css
 
-      #custom-temp_graph{
-          color: <your background color>;
-          margin: 0px 0px 0px 0px;
-          padding: 0px 0px 0px 0px;
-          font-size: 18px;
-          text-shadow: none;
-      }
+  #custom-temp_graph{
+      color: <your background color>;
+      margin: 0px 0px 0px 0px;
+      padding: 0px 0px 0px 0px;
+      font-size: 18px;
+      text-shadow: none;
+  }

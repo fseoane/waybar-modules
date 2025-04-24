@@ -1,5 +1,6 @@
 Arch Linux updates (pacman and AUR)  module for Waybar
----------------------------------------------
+------------------------------------------------------
+
 (https://github.com/fseoane/waybar-modules.git)
 
 Why not just exec checkupdates in custom waybar module?
@@ -18,31 +19,36 @@ How to use
 
 2.-add to ~/.config/waybar/config
 
-    "custom/updatepackages": {
-        "exec": "$HOME/.config/waybar/scripts/updates/archupdates-rs --interval 900",
-        "return-type": "json",
-        "hide-empty-text": true,
-        "format": "<span font='12'>󰏖</span>  {}",
-        "tooltip": true,
-        "tooltip-format": "<span font='10'>{alt}</span>",
-        "escape": true,
-        "exec-on-event": true,
-        "on-click": "pacman -Syu",                      // install pacman updates only
-        "on-click-middle": "pacman -Syu; yay -Syu",     // install pacman and aur updates
-        "on-click-right": "yay -Syu",                   // install aur updates only
-    },
+```
+  "custom/updatepackages": {
+    "exec": "$HOME/.config/waybar/scripts/updates/archupdates-rs --interval 300",
+    "return-type": "json",
+    "hide-empty-text": true,
+    "format": "<span font='12'>󰏖</span>  {}",
+    "tooltip": true,
+    "tooltip-format": "<span font='10'>{alt}</span>",
+    "escape": true,
+    "exec-on-event": true,
+    "on-click": "pacman -Syu",                      // install pacman updates only
+    "on-click-middle": "pacman -Syu; yay -Syu",     // install pacman and aur updates
+    "on-click-right": "yay -Syu",                   // install aur updates only
+},
+```
+
 * where cli options are
-  * --interval - interval to gather the updates (defaults to 900 seconds or 15 minutes).
+  * --interval - interval to gather the updates (defaults to 300 seconds or 15 minutes). If <seconds> seconds is 0 it will execute once and then exit (instead of entering an infinite loop to check updates on that interval specified in <seconds> seconds parameter <seconds>)
 
 3.-add "custom/updatepackages" to one of modules-left, modules-center or modules-right
 
 4.-set your style in .config/waybar/style.css
 
-    #custom-updatepackages{
-        color: <your foreground color>;
-        background-color: <your background color>;
-        margin: 0px 0px 0px 0px;
-        padding: 0px 0px 0px 0px;
-        font-size: 13px;
-        text-shadow: none;
-    }
+```
+#custom-updatepackages{
+color: your;
+background-color: your;
+margin: 0px 0px 0px 0px;
+padding: 0px 0px 0px 0px;
+font-size: 13px;
+text-shadow: none;
+}
+```
