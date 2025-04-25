@@ -10,7 +10,7 @@ How to use
 
 1.-install binary diskspace-graph-rs wherever your user have access (I use to put them in a script folder inside .config/waybar/ folder)
 
-2.-add to ~/.config/waybar/config
+2.-add to ~/.config/waybar/config.json
 
 ```
 "custom/diskspace_graph": {

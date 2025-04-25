@@ -12,7 +12,7 @@ How to use
 
 1.-install binary tempgraph-rs wherever your user have access (I use to put them in a script folder inside .config/waybar/ folder)
 
-2.-add to ~/.config/waybar/config
+2.-add to ~/.config/waybar/config.json
 
 ```
 "custom/temp_graph": {
@@ -36,10 +36,10 @@ How to use
 
 5.- set your style in .config/waybar/style.css
 
-  #custom-temp_graph{
-      color: <your background color>;
-      margin: 0px 0px 0px 0px;
-      padding: 0px 0px 0px 0px;
-      font-size: 18px;
-      text-shadow: none;
-  }
+#custom-temp_graph{
+color: <your background color>;
+margin: 0px 0px 0px 0px;
+padding: 0px 0px 0px 0px;
+font-size: 18px;
+text-shadow: none;
+}

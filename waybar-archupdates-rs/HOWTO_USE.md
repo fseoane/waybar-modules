@@ -3,40 +3,31 @@ Arch Linux updates (pacman and AUR)  module for Waybar
 
 (https://github.com/fseoane/waybar-modules.git)
 
-Why not just exec checkupdates in custom waybar module?
-
-This module will provide relevant local information constantly and periodically update data from the network in backgroud. Direct "checkupdates" will only give you one of two things: updating the information with a long delay or having the module constantly active on the network.
-This module has 2 states which gives you the ability to display different icons depending on status.
-Waybar expects JSON in an infinite loop from modules. So we have this.
-See updates list in tooltip.
-
-This small program will give you fast updates with less network usage. After you have installed all the updates, the module will immediately go into the Updated state. You don't need to send signals to waybar to update this module state.
+This small program will give you fast Arch Linux (BTW) updates .
 
 How to use
 ----------
 
 1.-install binary archupdates-rs wherever your user have access (I use to put them in a script folder inside .config/waybar/ folder)
 
-2.-add to ~/.config/waybar/config
+2.-add to ~/.config/waybar/config.json
 
 ```
   "custom/updatepackages": {
-    "exec": "$HOME/.config/waybar/scripts/updates/archupdates-rs --interval 300",
+    "exec": "$HOME/.config/waybar/scripts/updates/archupdates-rs",
     "return-type": "json",
     "hide-empty-text": true,
     "format": "<span font='12'>󰏖</span>  {}",
     "tooltip": true,
     "tooltip-format": "<span font='10'>{alt}</span>",
     "escape": true,
-    "exec-on-event": true,
     "on-click": "pacman -Syu",                      // install pacman updates only
     "on-click-middle": "pacman -Syu; yay -Syu",     // install pacman and aur updates
     "on-click-right": "yay -Syu",                   // install aur updates only
+    "interval": 300,
+    "signal": 11
 },
 ```
-
-* where cli options are
-  * --interval - interval to gather the updates (defaults to 300 seconds or 15 minutes). If <seconds> seconds is 0 it will execute once and then exit (instead of entering an infinite loop to check updates on that interval specified in <seconds> seconds parameter <seconds>)
 
 3.-add "custom/updatepackages" to one of modules-left, modules-center or modules-right
 

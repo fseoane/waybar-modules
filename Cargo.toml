@@ -7,8 +7,7 @@ members = [
     "waybar-mem-graph-rs",
     "waybar-net-graph-rs",
     "waybar-temp-graph-rs",
-	"waybar-archupdates-rs",
-    "waybar-stocks-ticker-rs"
+	"waybar-archupdates-rs"
 ]
 
 [profile.release]
