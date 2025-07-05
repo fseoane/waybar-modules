@@ -188,9 +188,9 @@ fn main() {
 
         let alt = tooltip.clone();
 
-        println!("{{\"text\":\"{}({}+{})\",\"tooltip\":\"{}\",\"class\":\"has-updates\",\"alt\":\"{}\"}}", (&updates+&aur_updates),&updates,&aur_updates, &tooltip, &alt);
+        println!("{{\"text\":\"{}({}+{})\",\"tooltip\":\"{}\",\"class\":\"has-updates\",\"alt\":\"{}\",\"percentage\":0}}", (&updates+&aur_updates),&updates,&aur_updates, &tooltip, &alt);
     } else {
-        println!("{{\"text\":\"\",tooltip\":\"\",\"class\":\"\",\"alt\":\"\"}}");
+        println!("{{\"text\":\"\",tooltip\":\"\",\"class\":\"\",\"alt\":\"\",\"percentage\":0}}");
     }
 
 
