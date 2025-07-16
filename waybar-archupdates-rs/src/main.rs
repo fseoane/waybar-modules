@@ -190,7 +190,7 @@ fn main() {
 
         println!("{{\"text\":\"{}({}+{})\",\"tooltip\":\"{}\",\"class\":\"has-updates\",\"alt\":\"{}\",\"percentage\":0}}", (&updates+&aur_updates),&updates,&aur_updates, &tooltip, &alt);
     } else {
-        println!("{{\"text\":\"\",tooltip\":\"\",\"class\":\"\",\"alt\":\"\",\"percentage\":0}}");
+        println!("{{\"text\":\"\",\"tooltip\":\"\",\"class\":\"\",\"alt\":\"\",\"percentage\":0}}");
     }
 
 
