@@ -159,7 +159,9 @@ fn main() {
         );
         let mut iterlines = 0;
         for line in aur_stdout.lines(){
-            if stdout.contains(line) {
+            let program = line.split_ascii_whitespace().next().unwrap().to_string();
+            if stdout.contains(program.as_str()) {
+            //if stdout.contains(line) {
                 aur_updates = aur_updates - 1;
             }
             else {
